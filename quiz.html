@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700&family=Lexend+Deca&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+    <title>Document</title>
+</head>
+<body>
+    <div class="page">
+    <div class="card">
+        <h1>PROGRAMMERS' QUIZ</h1>
+        <h2 id="question">Question </h2>
+        <h3>Select answer</h3>
+        <div>
+            <button id="answer1">Answer 1</button>   
+            <button id="answer2">Answer 2</button>
+            <button id="answer3">Answer 3</button>
+            <button id="answer4">Answer 4</button>
+        </div>
+        <div class="bottom">
+        <img src="/images/hourglass.png" alt="hourglass" class="time" /> <h3>TIME</h3>
+    </div>
+    </div>
+</div>
+</body>
+
+
+
+<script>
+      async function getQuiz() {
+        const response = await fetch("http://localhost:4000/questions/1");
+        const data = await response.json();
+        console.log(data)
+
+        const questionTitle = document.getElementById("question");
+        questionTitle.innerText = data.question;
+
+        for (let index = 1; index <= 4; index++) {
+            const button = document.getElementById(`answer${index}`);
+            button.innerText = data.options[index];
+        }
+
+        button.onclick = getQuizTwo()
+//later: button onclick naar volgende async function, dit is vraag reversed. dit kan misschien in een loop? `http://localhost:4000/questions/${index}`
+//in een loop verwerken (tot index = 25, while loop?). bij laatste vraag button onclick = results page
+    }
+
+    async function getQuizTwo() {
+        const response = await fetch("http://localhost:4000/questions/2");
+        const data = await response.json();
+        console.log(data)
+
+        const questionTitle= document.getElementById("question");
+        questionTitle.innerText = data.question;
+
+        for (let index = 1; index <= 4; index++) {
+            const button = document.getElementById(`answer${index}`);
+            button.innerText = data.options[index];
+        }
+        button.onclick = getQuiz()
+    }
+
+    getQuiz()  
+</script>
+</html>
