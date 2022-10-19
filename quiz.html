@@ -16,14 +16,14 @@
         <h1>PROGRAMMERS' QUIZ</h1>
         <h2 id="question">Question </h2>
         <h3>Select answer</h3>
-        <div>
-            <button id="answer1">Answer 1</button>   
-            <button id="answer2">Answer 2</button>
-            <button id="answer3">Answer 3</button>
-            <button id="answer4">Answer 4</button>
+        <div class = "buttons">
+            <button class="answer1" id="answer1">Answer 1</button>   
+            <button class="answer2" id="answer2">Answer 2</button>
+            <button class="answer3" id="answer3">Answer 3</button>
+            <button class="answer4" id="answer4">Answer 4</button>
         </div>
         <div class="bottom">
-        <img src="/images/hourglass.png" alt="hourglass" class="time" /> <h3>TIME</h3>
+        <img src="/images/timer.png" alt="timer" class="time" /> <h3>TIME</h3>
     </div>
     </div>
 </div>
@@ -43,11 +43,22 @@
         for (let index = 1; index <= 4; index++) {
             const button = document.getElementById(`answer${index}`);
             button.innerText = data.options[index];
+            button.onclick = () => vote(button.innerText)
         }
 
-        button.onclick = getQuizTwo()
-//later: button onclick naar volgende async function, dit is vraag reversed. dit kan misschien in een loop? `http://localhost:4000/questions/${index}`
-//in een loop verwerken (tot index = 25, while loop?). bij laatste vraag button onclick = results page
+    }
+
+    async function vote(answer) {
+       await fetch("http://localhost:4000/questions/1/vote", {
+            method: "POST",
+            body: JSON.stringify({option: answer}),
+            headers: {
+          "Content-Type": "application/json",
+        }
+        });
+
+        window.location = "/quiz.html"
+        getQuizTwo()
     }
 
     async function getQuizTwo() {
@@ -61,10 +72,30 @@
         for (let index = 1; index <= 4; index++) {
             const button = document.getElementById(`answer${index}`);
             button.innerText = data.options[index];
+            button.onclick = () => voteTwo(button.innerText)
         }
-        button.onclick = getQuiz()
+  
     }
 
+    async function voteTwo(answer) {
+       await fetch("http://localhost:4000/questions/2/vote", {
+            method: "POST",
+            body: JSON.stringify({option: answer}),
+            headers: {
+          "Content-Type": "application/json",
+        }
+        });
+
+        window.location = "/quiz.html"
+        getQuiz()
+    }
+
+
     getQuiz()  
+
+
+    //later: button onclick naar volgende async function, dit is vraag reversed. dit kan misschien in een loop? `http://localhost:4000/questions/${index}`
+    //in een loop verwerken (tot index = 25, while loop?). bij laatste vraag button onclick = results page
+
 </script>
 </html>

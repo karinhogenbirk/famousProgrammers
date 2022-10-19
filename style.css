@@ -8,62 +8,85 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    border: 1px solid red;
+    /* border: 1px solid red; */
 }
 
+body {
+    background-color: #C5E4E7;
+}
 .card {
     width: 375px;
-    height: 789px;
-    border-radius: 25px 25px 0px 0px;
+    height: 1000px;
+    border-radius: 25px;
     margin-top: 144px;
-    background-color: #FFFFFF;
+    background-color: white;
     padding: 32px;
+    border: 2px solid #26C2AE;
+    justify-content: center;
 }
 
 h1 {
     font-family: 'Space Mono';
     color: #00474B;
+    margin-bottom: 25px;
 }
 
 h2 {
     font-family: 'Space Mono';
-    font-size: 24px;
+    font-size: 20px;
     color: #00474B;
+    margin-bottom: 25px;
 }
 
 h3 {
     font-size: 16px;
     font-family: 'Space Mono';
     color: #5E7A7D;
+    margin-bottom: 25px;
 }
 
 p {
     font-size: 16px;
     font-family: 'Space Mono';
     color: #00474B;
+    margin-bottom: 25px;
 }
 
 
 .programmers {
     width: 100%;
+    margin-bottom: 25px;
 }
 
 button {
     background-color: #26C2AE;
     color:  #00474B;
-    width: 170px;
-    height: 80px;
-    font-size: 16px;
+    width: 150px;
+    height: 150px;
+    font-size: 10px;
     margin-bottom: 25px;
-    justify-content: space-between;
     font-family: 'Space Mono';
+    text-align: center;
+    border-radius: 5px;
+    border: none;
+}
+
+.buttons {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 35px;
 }
 
+.start_button {
+    width: 150px;
+    height: 50px;
+    font-size: 16px;
+}
 .time {
     width: 35px;
+    height: 35px;
     margin-right: 25px;
     margin-left: 15px;
 }

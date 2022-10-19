@@ -60,6 +60,11 @@ app.get("/programmers", (req, res) => {
             }
         ]
 
+        // const test =  questionOne.find(() => {
+        //     console.log("input", rightName)
+        // })
+
+ 
         const questionTwo = [
             {name: randomName,
             projects: [
@@ -138,10 +143,8 @@ function shuffledProjects(itemsQ2) {
                        } , 
                 }
                 ]
-            
 
                 console.log(questions)
-
 
 
 
@@ -150,6 +153,62 @@ function shuffledProjects(itemsQ2) {
         res.json(question);
       });
 
+      
+      app.post("/questions/:id/vote", (req, res) => {
+        // console.log("WORKING?", req.body)
+
+        quiz = questions.map((question) => {
+            if (question.id === 1 && Number(req.params.id) === 1)
+            {
+                votes = questionOne.find(() => {
+                    if(req.body.option === rightName) {
+                        console.log("Awesome!")
+                        voteCount = programmers.find((programmer) => {
+                            if (programmer.name === req.body.option) {
+                                let voteStatus = programmer.vote
+                                voteStatus++;
+                                console.log(voteStatus)
+                            }
+                        })
+                    } else {
+                        console.log("Wrong!")
+                        voteCount = programmers.find((programmer) => {
+                            if (programmer.name === req.body.option) {
+                                let voteStatus = programmer.vote
+                                voteStatus--;
+                                console.log(voteStatus)
+                            }
+                        })
+                    }
+                    return res.status(200)
+                })
+            } else if (question.id === 2 && Number(req.params.id) === 2)  
+            {
+                voteQ2 = questionTwo.map(() => {
+                    if(req.body.option === rightProject) {
+                        console.log("Awesome!")
+                        voteCount = programmers.find((programmer) => {
+                            if (programmer.name === nameQuestionTwo(questionTwo)) {
+                                let voteStatus = programmer.vote
+                                voteStatus++;
+                                console.log(voteStatus)
+                            }
+                    }) } else {
+                        console.log("Wrong! Q2")
+                        voteCount = programmers.find((programmer) => {
+                            if (programmer.name === nameQuestionTwo(questionTwo)) {
+                                let voteStatus = programmer.vote
+                                voteStatus--;
+                                console.log(voteStatus)
+                            }
+                        })
+                    }
+                    return res.status(200)
+                }) 
+            }
+      })
+    })
+    
 
 
 async function getWikiPage() {
@@ -159,7 +218,7 @@ async function getWikiPage() {
     const doc = new JSDOM(HTML)
     const listedNames = doc.window.document.querySelectorAll("ul");
 
-const names = [{name: "Karin Hogenbirk", knownFor: "Creating the famous programmers' API", id: 20}];
+const names = [{name: "Karin Hogenbirk", knownFor: "Creating the famous programmers' API", id: 20, vote: 0}];
 
 
 for (let index = 1; index < 24; index++) {
@@ -171,7 +230,7 @@ for (let index = 1; index < 24; index++) {
             const id = nextId + String(tempId)
             const eachName = name[index].textContent
             const splittedNames = eachName.split(" – ")
-            const nameObject = {name: splittedNames[0], knownFor: splittedNames[1], id: Number(id) }
+            const nameObject = {name: splittedNames[0], knownFor: splittedNames[1], id: Number(id), vote: 0 }
             //begint opnieuw met tellen bij iedere nieuwe letter vh alfabet
             names.push(nameObject);
     console.log(nameObject)

@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700&family=Lexend+Deca&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,23 +21,9 @@
         You will get 20 seconds for each question, so respond quickly before the time is up! 
         </h3>
 <div>
-    <button id="button">Start the quiz</button>
+    
+    <button class="start_button" id="button" onclick= "window.location.href = 'http://localhost:4000/questions/1';" >Start the quiz</button>
 </div>
 </div>
-<script>
-
-    async function quizPage() {
-        const response = await fetch("http://localhost:4000/questions/1")
-        const data = response.json();
-        console.log(data)
-
-        if (button.onclick){
-        window.location = "/quiz.html";
-        }
-    } 
-
-  quizPage();
-
-</script>
 </body>
 </html>
