@@ -21,8 +21,8 @@ body {
     margin-top: 144px;
     background-color: white;
     padding: 32px;
-    border: 2px solid #26C2AE;
     justify-content: center;
+    box-shadow: 5px 10px 20px #26C2AE;
 }
 
 h1 {
@@ -52,6 +52,13 @@ p {
     margin-bottom: 25px;
 }
 
+ol {
+    font-size: 16px;
+    font-family: 'Space Mono';
+    color: #00474B;
+    margin-bottom: 25px;
+    margin-left: 32px;
+}
 
 .programmers {
     width: 100%;
@@ -69,6 +76,11 @@ button {
     text-align: center;
     border-radius: 5px;
     border: none;
+}
+
+button:hover {
+    background-color: #C5E4E7;
+    cursor: pointer;
 }
 
 .buttons {
@@ -91,7 +103,27 @@ button {
     margin-left: 15px;
 }
 
+.dancing_man {
+    width: 100%;
+    margin-bottom: 35px;
+}
+
 .bottom {
     display: flex;
     flex-direction: row;
 }
+
+progress {
+    height: 15px;
+    border-radius: 0px;
+    accent-color: #00474B;
+}
+
+progress::before {
+    background-color: aliceblue;
+}
+
+progress::after {
+    background-color: #00474B;
+}
+/* dit werkt nog niet (kleur progressbar) */

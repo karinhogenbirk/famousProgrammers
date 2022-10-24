@@ -2,244 +2,274 @@ const axios = require("axios");
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 const fs = require("fs");
-const express = require('express');
+const express = require("express");
 const app = express();
 const cors = require("cors");
 app.use(express.json());
 app.use(cors());
-const PORT = process.env.PORT || 4000 
+const PORT = process.env.PORT || 5432;
 const programmers = require("./programmers.json");
-// const uniqueRandomArray = require("unique-random-array")
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
+async function main() {
+  const programmer = await prisma.programmer.create({
+    data: programmers,
+  });
+  console.log(programmer);
+}
+
+//   main()
+//     .then(async () => {
+//       await prisma.$disconnect()
+//     })
+//     .catch(async (e) => {
+//       console.error(e)
+//       await prisma.$disconnect()
+//       process.exit(1)
+//     })
 
 app.listen(PORT, () => {
-    console.log("It works!")
-})
-
+  console.log("It works!");
+});
 
 app.get("/programmers", (req, res) => {
-    return res.json(programmers)
-} )
+  return res.json(programmers);
+});
 
 //random projecten en programmers uit programmers.json halen
-    function getRandomProject(programmers) { 
-        const keys = Object.values(programmers);
+function getRandomProject(programmers) {
+  const keys = Object.values(programmers);
 
-        const randomObject = keys[Math.floor(Math.random() * keys.length)];
-        const randomProject= randomObject.knownFor
+  const randomObject = keys[Math.floor(Math.random() * keys.length)];
+  const randomProject = randomObject.knownFor;
 
-        return randomProject
-    }
+  return randomProject;
+}
 
-    function getRandomName(programmers) { 
-        const keys = Object.values(programmers);
+function getRandomName(programmers) {
+  const keys = Object.values(programmers);
 
-        const randomObject = keys[Math.floor(Math.random() * keys.length)];
-        const randomName = randomObject.name
+  const randomObject = keys[Math.floor(Math.random() * keys.length)];
+  const randomName = randomObject.name;
 
-        return randomName
-    }
+  return randomName;
+}
 
-     //rightProject geeft het juiste antwoord bij randomName
-    const randomName = getRandomName(programmers)
-    const project = programmers.find((project) => randomName === project.name );
-    const rightProject = project.knownFor
-   
-       
-    const randomProject = getRandomProject(programmers)
-    const programmer = programmers.find((programmer) => randomProject === programmer.knownFor );
-    const rightName = programmer.name
+//QUESTION PROGRAMMER
 
-        //onderstaande geeft een array met een randomProject, bijbehorende jusite programmer(name), en 3 random programmers(getRandomName)
-        const questionOne = [
-            {project: randomProject,
-            names: [rightName,
-            getRandomName(programmers),
-            getRandomName(programmers),
-            getRandomName(programmers)
-            ]
-            }
-        ]
+// let itemsQ2 = questionTwo[0].projects;
 
-        // const test =  questionOne.find(() => {
-        //     console.log("input", rightName)
-        // })
+// const shuffledProjectsList = shuffledProjects(itemsQ2);
 
- 
-        const questionTwo = [
-            {name: randomName,
-            projects: [
-            rightProject,
-            getRandomProject(programmers),
-            getRandomProject(programmers),
-            getRandomProject(programmers)
-            ]
-            }
-        ]
+function createRandomProgrammerQuestion(programmers) {
+  const randomName = getRandomName(programmers);
+  const project = programmers.find((project) => randomName === project.name);
+  const rightProject = project.knownFor;
+  const projects = [
+    rightProject,
+    getRandomProject(programmers),
+    getRandomProject(programmers),
+    getRandomProject(programmers),
+  ];
 
-    //functie om iedere keer een nieuw project/name te returnen:
-    function projectQuestionOne(questionOne) {
-        const nameQuestion = questionOne[0].project;
-        return nameQuestion
-    }
+  const shuffledAnswers = shuffledProjects(projects);
 
-    function nameQuestionTwo(questionTwo) {
-        const nameQuestion = questionTwo[0].name;
-        return nameQuestion
-    }
+  return {
+    name: `Which project is ${randomName} known for?`,
+    projects: shuffledAnswers,
+  };
+}
 
-        //variabele met een array maken en deze shuffelen, voor vraag 1 en 2 (Q1 en Q2)
-
-    let itemsQ1 = questionOne[0].names
-
-    function shuffledNames(itemsQ1) {
-        var currentIndex = itemsQ1.length, temporaryValue, randomIndex;
-        while (0 !== currentIndex) {
-          randomIndex = Math.floor(Math.random() * currentIndex);
-          currentIndex -= 1;
-          temporaryValue = itemsQ1[currentIndex];
-          itemsQ1[currentIndex] = itemsQ1[randomIndex];
-          itemsQ1[randomIndex] = temporaryValue;
-        }
-        return itemsQ1;
-      }
-
-const shuffledProgrammers = shuffledNames(itemsQ1)
-
-    let itemsQ2 = questionTwo[0].projects
-
+console.log(createRandomProgrammerQuestion(programmers));
 
 function shuffledProjects(itemsQ2) {
-    var currentIndex = itemsQ2.length, temporaryValue, randomIndex;
-    while (0 !== currentIndex) {
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-      temporaryValue = itemsQ2[currentIndex];
-      itemsQ2[currentIndex] = itemsQ2[randomIndex];
-      itemsQ2[randomIndex] = temporaryValue;
-    }
-    return itemsQ2;
+  var currentIndex = itemsQ2.length,
+    temporaryValue,
+    randomIndex;
+  while (0 !== currentIndex) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    temporaryValue = itemsQ2[currentIndex];
+    itemsQ2[currentIndex] = itemsQ2[randomIndex];
+    itemsQ2[randomIndex] = temporaryValue;
   }
+  return itemsQ2;
+}
 
-    const shuffledProjectsList = shuffledProjects(itemsQ2) 
+app.get("/questions/random", (req, res) => {
+  res.json(createRandomProgrammerQuestion(programmers));
+});
 
+//QUESTION PROJECT
 
-        const questions = [ 
-            { 
-                id: 1,
-              question: `Which programmer is known for: ${projectQuestionOne(questionOne)}?`,
-              options:
-                 {  1: shuffledProgrammers[0], 
-                    2: shuffledProgrammers[1],
-                    3: shuffledProgrammers[2],
-                    4: shuffledProgrammers[3] } 
-            }, 
-                { id: 2,
-                 question: `Which project is ${nameQuestionTwo(questionTwo)} known for?`,
-                    options:
-                        { 1: shuffledProjectsList[0], 
-                           2: shuffledProjectsList[1],
-                           3: shuffledProjectsList[2],
-                           4: shuffledProjectsList[3]
-                       } , 
-                }
-                ]
+function createRandomProjectQuestion(programmers) {
+  const randomProject = getRandomProject(programmers);
+  const programmer = programmers.find(
+    (programmer) => randomProject === programmer.knownFor
+  );
+  const rightName = programmer.name;
+  const names = [
+    rightName,
+    getRandomName(programmers),
+    getRandomName(programmers),
+    getRandomName(programmers),
+  ];
 
-                console.log(questions)
+  const shuffledNameAnswers = shuffledNames(names);
 
+  return {
+    project: `Which programmer is known for: ${randomProject}?`,
 
+    //dit nog aanpassen, zie POST > answer is always wrong
+    names: shuffledNameAnswers,
+  };
+}
 
-    app.get("/questions/:id", (req, res) => {
-        const question = questions.find((question) => Number(question.id) === Number(req.params.id));
-        res.json(question);
+console.log(createRandomProjectQuestion(programmers));
+
+function shuffledNames(itemsQ1) {
+  var currentIndex = itemsQ1.length,
+    temporaryValue,
+    randomIndex;
+  while (0 !== currentIndex) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    temporaryValue = itemsQ1[currentIndex];
+    itemsQ1[currentIndex] = itemsQ1[randomIndex];
+    itemsQ1[randomIndex] = temporaryValue;
+  }
+  return itemsQ1;
+}
+
+app.get("/questions/2", (req, res) => {
+  res.json(createRandomProjectQuestion(programmers));
+});
+
+app.get("/questions/:id", (req, res) => {
+  const question = questions.find(
+    (question) => Number(question.id) === Number(req.params.id)
+  );
+  res.json(question);
+});
+
+app.post("/questions/:id/vote", (req, res) => {
+  if (req.params.id == 1) {
+    console.log(req.body);
+
+    const programmer = programmers.find((programmer) => {
+      return (
+        `Which project is ${programmer.name} known for?` === req.body.name &&
+        programmer.knownFor === req.body.option
+      );
+    });
+
+    if (programmer) {
+      programmer.vote++;
+      return res.json({ message: "Correct!" });
+    } else if (req.body.option === "empty") {
+      const projectEmpty = programmers.find((programmer) => {
+        if (
+          `Which project is ${programmer.name} known for?` === req.body.name &&
+          req.body.option === "empty"
+        ) {
+          programmer.vote -= 0.5;
+          console.log(programmer.vote);
+        }
       });
+      return res.json({ message: "Time's up!" });
+    } else {
+      const programmerCount = programmers.find((programmer) => {
+        if (
+          `Which project is ${programmer.name} known for?` === req.body.name &&
+          programmer.knownFor !== req.body.option
+        ) {
+          programmer.vote--;
+          console.log(programmer.vote);
+        }
+      });
+      return res.json({ message: "Wrong!" });
+    }
+  } else if (req.params.id == 2) {
+    console.log(req.body);
+    const programmer = programmers.find((programmer) => {
+      return (
+        `Which programmer is known for: ${programmer.knownFor}?` ===
+          req.body.project && programmer.name === req.body.option
+      );
+    });
 
-      
-      app.post("/questions/:id/vote", (req, res) => {
-        // console.log("WORKING?", req.body)
-
-        quiz = questions.map((question) => {
-            if (question.id === 1 && Number(req.params.id) === 1)
-            {
-                votes = questionOne.find(() => {
-                    if(req.body.option === rightName) {
-                        console.log("Awesome!")
-                        voteCount = programmers.find((programmer) => {
-                            if (programmer.name === req.body.option) {
-                                let voteStatus = programmer.vote
-                                voteStatus++;
-                                console.log(voteStatus)
-                            }
-                        })
-                    } else {
-                        console.log("Wrong!")
-                        voteCount = programmers.find((programmer) => {
-                            if (programmer.name === req.body.option) {
-                                let voteStatus = programmer.vote
-                                voteStatus--;
-                                console.log(voteStatus)
-                            }
-                        })
-                    }
-                    return res.status(200)
-                })
-            } else if (question.id === 2 && Number(req.params.id) === 2)  
-            {
-                voteQ2 = questionTwo.map(() => {
-                    if(req.body.option === rightProject) {
-                        console.log("Awesome!")
-                        voteCount = programmers.find((programmer) => {
-                            if (programmer.name === nameQuestionTwo(questionTwo)) {
-                                let voteStatus = programmer.vote
-                                voteStatus++;
-                                console.log(voteStatus)
-                            }
-                    }) } else {
-                        console.log("Wrong! Q2")
-                        voteCount = programmers.find((programmer) => {
-                            if (programmer.name === nameQuestionTwo(questionTwo)) {
-                                let voteStatus = programmer.vote
-                                voteStatus--;
-                                console.log(voteStatus)
-                            }
-                        })
-                    }
-                    return res.status(200)
-                }) 
-            }
-      })
-    })
-    
-
+    if (programmer) {
+      programmer.vote++;
+      return res.json({ message: "Correct!" });
+    } else if (req.body.option === "empty") {
+      const programmerEmpty = programmers.find((programmer) => {
+        if (
+          `Which programmer is known for: ${programmer.knownFor}?` ===
+            req.body.project &&
+          req.body.option === "empty"
+        ) {
+          programmer.vote -= 0.5;
+          console.log(programmer.vote);
+        }
+      });
+      return res.json({ message: "Time's up!" });
+    } else {
+      const programmerCountDown = programmers.find((programmer) => {
+        if (
+          `Which programmer is known for: ${programmer.knownFor}?` ===
+            req.body.project &&
+          programmer.name !== req.body.option
+        ) {
+          programmer.vote--;
+          console.log(programmer.vote);
+        }
+      });
+      return res.json({ message: "Wrong!" });
+    }
+  }
+});
 
 async function getWikiPage() {
-    const response = await axios.default.get("https://en.wikipedia.org/wiki/List_of_programmers");
-    
-    const HTML = response.data
-    const doc = new JSDOM(HTML)
-    const listedNames = doc.window.document.querySelectorAll("ul");
+  const response = await axios.default.get(
+    "https://en.wikipedia.org/wiki/List_of_programmers"
+  );
 
-const names = [{name: "Karin Hogenbirk", knownFor: "Creating the famous programmers' API", id: 20, vote: 0}];
+  const HTML = response.data;
+  const doc = new JSDOM(HTML);
+  const listedNames = doc.window.document.querySelectorAll("ul");
 
+  const names = [
+    {
+      name: "Karin Hogenbirk",
+      knownFor: "Creating the famous programmers' API",
+      id: 20,
+      vote: 0,
+    },
+  ];
 
-for (let index = 1; index < 24; index++) {
-    const list = listedNames[index]
-    const nextId = index  +1
-        const name = list.querySelectorAll("li")
-        for (let index = 0; index < name.length; index++) {
-            const tempId = index +1;
-            const id = nextId + String(tempId)
-            const eachName = name[index].textContent
-            const splittedNames = eachName.split(" – ")
-            const nameObject = {name: splittedNames[0], knownFor: splittedNames[1], id: Number(id), vote: 0 }
-            //begint opnieuw met tellen bij iedere nieuwe letter vh alfabet
-            names.push(nameObject);
-    console.log(nameObject)
-        }
-     
+  for (let index = 1; index < 24; index++) {
+    const list = listedNames[index];
+    // const nextId = index  +1
+    const name = list.querySelectorAll("li");
+    for (let index = 0; index < name.length; index++) {
+      // const tempId = index +1;
+      // const id = nextId + String(tempId)
 
-    
- }
- fs.writeFileSync("./programmers.json", JSON.stringify(names));
+      const eachName = name[index].textContent;
+      const splittedNames = eachName.split(" – ");
+      const nameObject = {
+        name: splittedNames[0],
+        knownFor: splittedNames[1],
+        vote: 0,
+      };
+      // id: Number(id), > deleted from object
+      //begint opnieuw met tellen bij iedere nieuwe letter vh alfabet
+      names.push(nameObject);
+      console.log(nameObject);
+    }
+  }
+  fs.writeFileSync("./programmers.json", JSON.stringify(names));
 }
-     
+
 // getWikiPage()
