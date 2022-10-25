@@ -37,7 +37,6 @@ app.get("/programmers", (req, res) => {
   return res.json(programmers);
 });
 
-//random projecten en programmers uit programmers.json halen
 function getRandomProject(programmers) {
   const keys = Object.values(programmers);
 
@@ -57,10 +56,6 @@ function getRandomName(programmers) {
 }
 
 //QUESTION PROGRAMMER
-
-// let itemsQ2 = questionTwo[0].projects;
-
-// const shuffledProjectsList = shuffledProjects(itemsQ2);
 
 function createRandomProgrammerQuestion(programmers) {
   const randomName = getRandomName(programmers);
@@ -120,8 +115,6 @@ function createRandomProjectQuestion(programmers) {
 
   return {
     project: `Which programmer is known for: ${randomProject}?`,
-
-    //dit nog aanpassen, zie POST > answer is always wrong
     names: shuffledNameAnswers,
   };
 }
@@ -166,6 +159,7 @@ app.post("/questions/:id/vote", (req, res) => {
 
     if (programmer) {
       programmer.vote++;
+
       return res.json({ message: "Correct!" });
     } else if (req.body.option === "empty") {
       const projectEmpty = programmers.find((programmer) => {
@@ -174,7 +168,6 @@ app.post("/questions/:id/vote", (req, res) => {
           req.body.option === "empty"
         ) {
           programmer.vote -= 0.5;
-          console.log(programmer.vote);
         }
       });
       return res.json({ message: "Time's up!" });
@@ -210,6 +203,7 @@ app.post("/questions/:id/vote", (req, res) => {
           req.body.option === "empty"
         ) {
           programmer.vote -= 0.5;
+
           console.log(programmer.vote);
         }
       });
@@ -222,6 +216,7 @@ app.post("/questions/:id/vote", (req, res) => {
           programmer.name !== req.body.option
         ) {
           programmer.vote--;
+
           console.log(programmer.vote);
         }
       });
@@ -250,12 +245,8 @@ async function getWikiPage() {
 
   for (let index = 1; index < 24; index++) {
     const list = listedNames[index];
-    // const nextId = index  +1
     const name = list.querySelectorAll("li");
     for (let index = 0; index < name.length; index++) {
-      // const tempId = index +1;
-      // const id = nextId + String(tempId)
-
       const eachName = name[index].textContent;
       const splittedNames = eachName.split(" – ");
       const nameObject = {
@@ -263,8 +254,6 @@ async function getWikiPage() {
         knownFor: splittedNames[1],
         vote: 0,
       };
-      // id: Number(id), > deleted from object
-      //begint opnieuw met tellen bij iedere nieuwe letter vh alfabet
       names.push(nameObject);
       console.log(nameObject);
     }

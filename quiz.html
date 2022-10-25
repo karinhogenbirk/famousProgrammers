@@ -14,7 +14,7 @@
     <div class="page">
     <div class="card">
         <h1>PROGRAMMERS' QUIZ</h1>
-        <h2 id="question">Question </h2>
+       <h2 id="count">1/10</h2> <h2 id="question">Question </h2>
         <p id ="feedback"></p>
         <h3>Select answer</h3>
         <div class = "buttons">
@@ -38,17 +38,19 @@
         const response = await fetch("http://localhost:5432/questions/random");
         const data = await response.json();
         console.log(data)
-        questionAmount++;
-        console.log(questionAmount)
+        questionCount++;
       
         const questionTitle = document.getElementById("question");
         questionTitle.innerText = data.name;
+
+        const questionNumber = document.getElementById("count");
+        questionNumber.innerText = questionCount + "/10";
+
 
         var timeleft = 20;
         var downloadTimer = setInterval(function(){
          if(timeleft <= 0){
         clearInterval(downloadTimer);
-        console.log("times up!")
         vote("empty", data.name)
          }
          document.getElementById("progressBar").value = 20 - timeleft;
@@ -79,12 +81,8 @@
         const data = await response.json()
         document.getElementById("feedback").innerText = data.message
 
-        
-        if(questionAmount === 11) {
-            window.location = "http://127.0.0.1:5500/results.html"
-        } else {
-            getQuizTwo()
-        }
+        getQuizTwo()
+    
       
     }
 
@@ -92,8 +90,10 @@
         const response = await fetch("http://localhost:5432/questions/2");
         const data = await response.json();
         console.log(data)
-        questionAmount++;
-        console.log(questionAmount)
+        questionCount++;
+        
+        const questionNumber = document.getElementById("count");
+        questionNumber.innerText = questionCount + "/10";
    
         const questionTitle= document.getElementById("question");
         questionTitle.innerText = data.project;
@@ -113,7 +113,10 @@
         for (let index = 0; index <= 3; index++) {
             const button = document.getElementById(`answer${index}`);
             button.innerText = data.names[index];
-            button.onclick = () => voteTwo(button.innerText, data.project)
+            button.onclick = () =>{
+                voteTwo(button.innerText, data.project)
+                clearInterval(downloadTimer)
+            } 
         }
   
     }
@@ -131,12 +134,15 @@
         const data = await response.json();
         document.getElementById("feedback").innerText = data.message
 
-        getQuiz()
+        if(questionCount == 10) {
+            window.location = "http://127.0.0.1:5500/results.html"
+        } else {
+            getQuiz()
+        }
+
     }
 
-
-
-    let questionAmount = 0;
+    let questionCount = 0;
 
             getQuiz()
 

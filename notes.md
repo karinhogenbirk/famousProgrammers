@@ -1,4 +1,0 @@
-- hoe pagina's linken in HTML format? Linkt nu naar json
-- questionOne linkt momenteel niet naar questionTwo
-- blocker voteCount (logt 2x)
-- styling: sommige antwoorden zijn 4x zo lang

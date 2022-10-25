@@ -97,7 +97,7 @@ button:hover {
     font-size: 16px;
 }
 .time {
-    width: 35px;
+    width: 30px;
     height: 35px;
     margin-right: 25px;
     margin-left: 15px;
@@ -113,17 +113,19 @@ button:hover {
     flex-direction: row;
 }
 
+
 progress {
-    height: 15px;
-    border-radius: 0px;
-    accent-color: #00474B;
-}
+    color: #00474B;
+    height: 25px;
+  }
+  
+  progress::-webkit-progress-bar {
+    background: white;
+  }
 
-progress::before {
-    background-color: aliceblue;
-}
-
-progress::after {
-    background-color: #00474B;
-}
+  progress::-webkit-progress-value {
+    background: #00474B;
+  }
+  
+ 
 /* dit werkt nog niet (kleur progressbar) */
