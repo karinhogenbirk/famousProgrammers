@@ -16,4 +16,9 @@
 ## Changes for deployment
 
 - Localhost in the url is not allowed!
-- Solution: Express hosts html files and images
+- Solution: Express hosts html files and images (express.static)
+
+## Final feature
+
+- When request programmers from GET /programmers, order (sort) them by votes
+- On the results page - fetch the programmers from GET /programmers, display (5?) them on the page
