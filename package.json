@@ -16,7 +16,9 @@
   "scripts": {
     "test": "start",
     "dev": "npx nodemon programmers.js",
-    "start": "node programmers.js"
+    "start": "node programmers.js",
+    "scrape": "node scraper.js",
+    "prisma:seed": "node ./prisma/seeders/programmers.js"
   },
   "author": "karin hogenbirk",
   "license": "ISC"
