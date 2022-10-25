@@ -36,34 +36,53 @@
   </body>
 
   <script>
+    function updateQuestionCount() {
+      const questionNumber = document.getElementById("count");
+      questionNumber.innerText = questionCount + "/10";
+    }
+
+    function displayQuestion(question) {
+      const questionTitle = document.getElementById("question");
+      questionTitle.innerText = question;
+    }
+
+    function startTimer(timeoutCallback) {
+      var timeleft = 20;
+      var intervalId = setInterval(function () {
+        if (timeleft <= 0) {
+          stopTimer();
+          // vote("empty", data.name)
+          // voteTwo("empty", data.project)
+          timeoutCallback();
+        }
+        document.getElementById("progressBar").value = 20 - timeleft;
+        timeleft -= 1;
+      }, 1000);
+
+      const stopTimer = () => {
+        clearInterval(intervalId);
+        document.getElementById("progressBar").value = 0;
+      };
+      return stopTimer;
+    }
+
     async function getQuiz() {
       const response = await fetch("./questions/programmers/random");
       const data = await response.json();
       console.log(data);
       questionCount++;
 
-      const questionTitle = document.getElementById("question");
-      questionTitle.innerText = data.name;
+      updateQuestionCount();
+      displayQuestion(data.name);
 
-      const questionNumber = document.getElementById("count");
-      questionNumber.innerText = questionCount + "/10";
-
-      var timeleft = 20;
-      var downloadTimer = setInterval(function () {
-        if (timeleft <= 0) {
-          clearInterval(downloadTimer);
-          vote("empty", data.name);
-        }
-        document.getElementById("progressBar").value = 20 - timeleft;
-        timeleft -= 1;
-      }, 1000);
+      const stopTimer = startTimer(() => vote("empty", data.name));
 
       for (let index = 0; index <= 3; index++) {
         const button = document.getElementById(`answer${index}`);
         button.innerText = data.projects[index];
         button.onclick = () => {
+          stopTimer();
           vote(button.innerText, data.name);
-          clearInterval(downloadTimer);
         };
       }
     }
@@ -88,29 +107,17 @@
       console.log(data);
       questionCount++;
 
-      const questionNumber = document.getElementById("count");
-      questionNumber.innerText = questionCount + "/10";
+      updateQuestionCount();
+      displayQuestion(data.project);
 
-      const questionTitle = document.getElementById("question");
-      questionTitle.innerText = data.project;
-
-      var timeleft = 20;
-      var downloadTimer = setInterval(function () {
-        if (timeleft <= 0) {
-          clearInterval(downloadTimer);
-          console.log("times up!");
-          voteTwo("empty", data.project);
-        }
-        document.getElementById("progressBar").value = 20 - timeleft;
-        timeleft -= 1;
-      }, 1000);
+      const stopTimer = startTimer(() => voteTwo("empty", data.project));
 
       for (let index = 0; index <= 3; index++) {
         const button = document.getElementById(`answer${index}`);
         button.innerText = data.names[index];
         button.onclick = () => {
+          stopTimer();
           voteTwo(button.innerText, data.project);
-          clearInterval(downloadTimer);
         };
       }
     }
