@@ -37,9 +37,7 @@
 
   <script>
     async function getQuiz() {
-      const response = await fetch(
-        "http://localhost:4000/questions/programmers/random"
-      );
+      const response = await fetch("./questions/programmers/random");
       const data = await response.json();
       console.log(data);
       questionCount++;
@@ -71,16 +69,13 @@
     }
 
     async function vote(answer, name) {
-      const response = await fetch(
-        "http://localhost:4000/questions/programmers/answer",
-        {
-          method: "POST",
-          body: JSON.stringify({ name: name, option: answer }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch("./questions/programmers/answer", {
+        method: "POST",
+        body: JSON.stringify({ name: name, option: answer }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
       document.getElementById("feedback").innerText = data.message;
 
@@ -88,9 +83,7 @@
     }
 
     async function getQuizTwo() {
-      const response = await fetch(
-        "http://localhost:4000/questions/projects/random"
-      );
+      const response = await fetch("./questions/projects/random");
       const data = await response.json();
       console.log(data);
       questionCount++;
@@ -123,21 +116,18 @@
     }
 
     async function voteTwo(answer, project) {
-      const response = await fetch(
-        "http://localhost:4000/questions/projects/answer",
-        {
-          method: "POST",
-          body: JSON.stringify({ option: answer, project: project }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch("./questions/projects/answer", {
+        method: "POST",
+        body: JSON.stringify({ option: answer, project: project }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
       document.getElementById("feedback").innerText = data.message;
 
       if (questionCount == 10) {
-        window.location = "http://127.0.0.1:5500/results.html";
+        window.location = "./results.html";
       } else {
         getQuiz();
       }

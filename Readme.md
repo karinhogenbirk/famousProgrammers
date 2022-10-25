@@ -12,3 +12,8 @@
 - Rewrite functions to be reusable
 - Split up answer enpoints: `POST /questions/programmers/answer` & `POST /questions/projects/answer`
 - Simplify answer logic: find the right programmer once, then check the answer, count the votes and respond
+
+## Changes for deployment
+
+- Localhost in the url is not allowed!
+- Solution: Express hosts html files and images
