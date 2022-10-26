@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700&family=Lexend+Deca&family=Space+Mono:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="page">
+      <div class="card">
+        <h1>PROGRAMMERS' QUIZ</h1>
+        <h2 id="count">1/10</h2>
+        <h2 id="question">Question</h2>
+        <p id="feedback"></p>
+        <h3>Select answer</h3>
+        <div class="buttons">
+          <button class="answer1" id="answer0">Answer 1</button>
+          <button class="answer2" id="answer1">Answer 2</button>
+          <button class="answer3" id="answer2">Answer 3</button>
+          <button class="answer4" id="answer3">Answer 4</button>
+        </div>
+        <div class="bottom">
+          <img src="/images/timer.png" alt="timer" class="time" />
+          <progress id="progressBar" value="0" max="20"></progress>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    function updateQuestionCount() {
+      const questionNumber = document.getElementById("count");
+      questionNumber.innerText = questionCount + "/10";
+    }
+
+    function displayQuestion(question) {
+      const questionTitle = document.getElementById("question");
+      questionTitle.innerText = question;
+    }
+
+    function startTimer(timeoutCallback) {
+      var timeleft = 20;
+      var intervalId = setInterval(function () {
+        if (timeleft <= 0) {
+          stopTimer();
+          // vote("empty", data.name)
+          // voteTwo("empty", data.project)
+          timeoutCallback();
+        }
+        document.getElementById("progressBar").value = 20 - timeleft;
+        timeleft -= 1;
+      }, 1000);
+
+      const stopTimer = () => {
+        clearInterval(intervalId);
+        document.getElementById("progressBar").value = 0;
+      };
+      return stopTimer;
+    }
+
+    async function getQuiz() {
+      const response = await fetch("./questions/programmers/random");
+      const data = await response.json();
+      console.log(data);
+      questionCount++;
+
+      updateQuestionCount();
+      displayQuestion(data.name);
+
+      const stopTimer = startTimer(() => vote("empty", data.name));
+
+      for (let index = 0; index <= 3; index++) {
+        const button = document.getElementById(`answer${index}`);
+        button.innerText = data.projects[index];
+        button.onclick = () => {
+          stopTimer();
+          vote(button.innerText, data.name);
+        };
+      }
+    }
+
+    async function vote(answer, name) {
+      const response = await fetch("./questions/programmers/answer", {
+        method: "POST",
+        body: JSON.stringify({ name: name, option: answer }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      document.getElementById("feedback").innerText = data.message;
+
+      getQuizTwo();
+    }
+
+    async function getQuizTwo() {
+      const response = await fetch("./questions/projects/random");
+      const data = await response.json();
+      console.log(data);
+      questionCount++;
+
+      updateQuestionCount();
+      displayQuestion(data.project);
+
+      const stopTimer = startTimer(() => voteTwo("empty", data.project));
+
+      for (let index = 0; index <= 3; index++) {
+        const button = document.getElementById(`answer${index}`);
+        button.innerText = data.names[index];
+        button.onclick = () => {
+          stopTimer();
+          voteTwo(button.innerText, data.project);
+        };
+      }
+    }
+
+    async function voteTwo(answer, project) {
+      const response = await fetch("./questions/projects/answer", {
+        method: "POST",
+        body: JSON.stringify({ option: answer, project: project }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      document.getElementById("feedback").innerText = data.message;
+
+      if (questionCount == 10) {
+        window.location = "./results.html";
+      } else {
+        getQuiz();
+      }
+    }
+
+    let questionCount = 0;
+
+    getQuiz();
+  </script>
+</html>
