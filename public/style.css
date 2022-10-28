@@ -4,6 +4,8 @@
     background-color: #3D6666;
 } */
 
+
+
 * {
     margin: 0;
     padding: 0;
@@ -19,6 +21,7 @@ body {
     height: 1000px;
     border-radius: 25px;
     margin-top: 144px;
+    margin-bottom: 144px;
     background-color: white;
     padding: 32px;
     justify-content: center;
@@ -117,15 +120,47 @@ button:hover {
 progress {
     color: #00474B;
     height: 25px;
-  }
-  
-  progress::-webkit-progress-bar {
-    background: white;
-  }
+  } 
 
-  progress::-webkit-progress-value {
-    background: #00474B;
-  }
-  
- 
-/* dit werkt nog niet (kleur progressbar) */
+@media only screen and (min-width: 992px) {
+    body {
+        display: flex;
+        justify-content: center;
+    }
+    .card { 
+            width: 800px;
+            height: 700px;
+            }
+    .buttons {
+        display: flex;
+        flex-direction: row;}
+
+    .dancing_man {
+        width: 40%;    }
+    p {
+        margin-bottom: 35px;
+    }
+
+    h2 {
+        margin-bottom: 35px;
+    }
+    }
+
+    @media only screen and (max-width: 600px) {
+        .card {
+            margin: 0px;
+            width: 100%;
+            border-radius: 0px;
+            border: 4px solid #26C2AE;
+        }
+        body {
+            margin: 0px;
+        }
+    }
+
+    @media only screen and (min-width: 600px) {
+        body {
+            display: flex;
+            justify-content: center;
+        }
+    }
