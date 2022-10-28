@@ -24,13 +24,30 @@
         </h2>
     </div>
    <ol>
-        <li id="first"> First </li>
-        <li id="second"> Second </li>
-        <li id="third"> Third</li>
-        <li id="fourth"> Fourth</li>
-        <li id="fifth"> Fifth</li>
+        <li id="programmer0"> First </li>
+        <li id="programmer1"> Second </li>
+        <li id="programmer2"> Third</li>
+        <li id="programmer3"> Fourth</li>
+        <li id="programmer4"> Fifth</li>
     </ol>
 </div>
 </div>
 </body>
+<script>
+    //make loop to add data to list
+
+    async function getResults() {
+      const response = await fetch("./questions/results");
+      const data = await response.json();
+      console.log(data);
+
+      for (let index = 0; index <= 4; index++) {
+        const programmerScore = document.getElementById(`programmer${index}`);
+        programmerScore.innerText = data[index].name
+      }
+    }
+
+    getResults()
+
+</script>
 </html>

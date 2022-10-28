@@ -75,3 +75,43 @@ app.post("/questions/projects/answer", (req, res) => {
     return res.json({ message: "Wrong!" });
   }
 });
+
+// testObj = [
+//   { name: "Karin", score: 1 },
+//   { name: "Marcel", score: 0 },
+//   { name: "Ola", score: 3 },
+//   { name: "Sonja", score: 5 },
+//   { name: "Michiel", score: 9 },
+//   { name: "Djun", score: 4 },
+//   { name: "Ashwin", score: 2 },
+// ];
+
+let highscoreArray = [];
+
+function highScores(programmers) {
+  for (let index = 0; index < programmers.length; index++) {
+    const programmer = programmers[index];
+    if (programmer.vote > 0) {
+      highscoreArray.push(programmer);
+    }
+  }
+  //this sorts the highest scores
+  let sortedArray = highscoreArray.sort(function (a, b) {
+    return b.score - a.score;
+  });
+  //this takes the first 5
+  const newHighscoreArray = [
+    sortedArray[0],
+    sortedArray[1],
+    sortedArray[2],
+    sortedArray[3],
+    sortedArray[4],
+  ];
+  return newHighscoreArray;
+}
+
+// console.log(highScores(programmers));
+
+app.get("/questions/results", (req, res) => {
+  return res.json(highScores(programmers));
+});
