@@ -41,10 +41,10 @@
       questionNumber.innerText = questionCount + "/10";
     }
 
-    function displayQuestion(question) {
-      const questionTitle = document.getElementById("question");
-      questionTitle.innerText = question;
-    }
+    // function displayQuestion(question) {
+    //   const questionTitle = document.getElementById("question");
+    //   questionTitle.innerText = question;
+    // }
 
     function startTimer(timeoutCallback) {
       var timeleft = 20;
@@ -73,7 +73,11 @@
       questionCount++;
 
       updateQuestionCount();
-      displayQuestion(data.name);
+      // displayQuestion(data.name);
+      // programmerName = data.name;
+
+      const questionTitle = document.getElementById("question");
+      questionTitle.innerText = "Which project is "+ data.name + "known for?";
 
       const stopTimer = startTimer(() => vote("empty", data.name));
 
@@ -108,7 +112,10 @@
       questionCount++;
 
       updateQuestionCount();
-      displayQuestion(data.project);
+      // displayQuestion(data.project);
+
+      const questionTitle = document.getElementById("question");
+      questionTitle.innerText = "Which programmer is known for: " + data.project + "?"
 
       const stopTimer = startTimer(() => voteTwo("empty", data.project));
 

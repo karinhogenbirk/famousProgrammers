@@ -28,7 +28,8 @@ function createRandomProgrammerQuestion(programmers) {
   const shuffledAnswers = shuffleArray(projects);
 
   return {
-    name: `Which project is ${randomName} known for?`,
+    // name: `Which project is ${randomName} known for?`,
+    name: randomName,
     projects: shuffledAnswers,
   };
 }
@@ -65,7 +66,7 @@ function createRandomProjectQuestion(programmers) {
   const shuffledNameAnswers = shuffleArray(names);
 
   return {
-    project: `Which programmer is known for: ${randomProject}?`,
+    project: randomProject,
     names: shuffledNameAnswers,
   };
 }
