@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 // database vullen
 async function main() {
-  const programmer = await prisma.programmer.create({
+  const programmer = await prisma.programmer.createMany({
     data: programmers,
   });
   console.log(programmer);
