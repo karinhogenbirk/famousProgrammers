@@ -41,10 +41,14 @@
       questionNumber.innerText = questionCount + "/10";
     }
 
-    // function displayQuestion(question) {
-    //   const questionTitle = document.getElementById("question");
-    //   questionTitle.innerText = question;
-    // }
+    var allButtons = document.querySelectorAll('button')  
+
+    function buttonDisabler(trueOrFalse) {
+      for (let index = 0; index < allButtons.length; index++) {
+           const button = allButtons[index];
+          button.disabled = trueOrFalse;
+    } 
+  }
 
     function startTimer(timeoutCallback) {
       var timeleft = 20;
@@ -71,21 +75,21 @@
       const data = await response.json();
       console.log(data);
       questionCount++;
+      buttonDisabler(false);
 
       updateQuestionCount();
-      // displayQuestion(data.name);
-      // programmerName = data.name;
 
       const questionTitle = document.getElementById("question");
-      questionTitle.innerText = "Which project is "+ data.name + "known for?";
+      questionTitle.innerText = "Which project is "+ data.name + " known for?";
 
-      const stopTimer = startTimer(() => vote("empty", data.name));
+      const stopTimer = startTimer(() => { buttonDisabler(true); vote("empty", data.name) });
 
       for (let index = 0; index <= 3; index++) {
         const button = document.getElementById(`answer${index}`);
         button.innerText = data.projects[index];
         button.onclick = () => {
-          stopTimer();
+          stopTimer(); 
+          buttonDisabler(true);  
           vote(button.innerText, data.name);
         };
       }
@@ -110,20 +114,20 @@
       const data = await response.json();
       console.log(data);
       questionCount++;
-
+      buttonDisabler(false);
       updateQuestionCount();
-      // displayQuestion(data.project);
 
       const questionTitle = document.getElementById("question");
       questionTitle.innerText = "Which programmer is known for: " + data.project + "?"
 
-      const stopTimer = startTimer(() => voteTwo("empty", data.project));
+      const stopTimer = startTimer(() => { buttonDisabler(true); voteTwo("empty", data.project) });
 
       for (let index = 0; index <= 3; index++) {
         const button = document.getElementById(`answer${index}`);
         button.innerText = data.names[index];
         button.onclick = () => {
           stopTimer();
+          buttonDisabler(true);
           voteTwo(button.innerText, data.project);
         };
       }
@@ -152,3 +156,4 @@
     getQuiz();
   </script>
 </html>
+    

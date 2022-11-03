@@ -38,6 +38,7 @@ app.get("/questions/projects/random", async (req, res) => {
 
 app.post("/questions/programmers/answer", async (req, res) => {
   if (req.body.option === "empty") {
+    res.json({ message: "Time out!" });
     const timeOut = await prisma.programmer.updateMany({
       where: {
         name: {
@@ -48,8 +49,6 @@ app.post("/questions/programmers/answer", async (req, res) => {
         vote: { decrement: 1 },
       },
     });
-    console.log(timeOut);
-    res.json({ message: "Time out!" });
   } else {
     const rightAnswer = await prisma.programmer.updateMany({
       where: {
@@ -68,6 +67,7 @@ app.post("/questions/programmers/answer", async (req, res) => {
     if (Object.values(rightAnswer).includes(1)) {
       res.json({ message: "Correct!" });
     } else {
+      res.json({ message: "Wrong!" });
       const wrongAnswer = await prisma.programmer.updateMany({
         where: {
           name: {
@@ -78,7 +78,6 @@ app.post("/questions/programmers/answer", async (req, res) => {
           vote: { decrement: 2 },
         },
       });
-      res.json({ message: "Wrong!" });
     }
   }
 });
