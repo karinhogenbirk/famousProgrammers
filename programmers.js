@@ -36,99 +36,96 @@ app.get("/questions/projects/random", async (req, res) => {
   res.json(createRandomProjectQuestion(programmers));
 });
 
-app.post("/questions/programmers/answer", async (req, res) => {
-  if (req.body.option === "empty") {
-    res.json({ message: "Time out!" });
-    const timeOut = await prisma.programmer.updateMany({
-      where: {
-        name: {
-          equals: req.body.name,
-        },
-      },
-      data: {
-        vote: { decrement: 1 },
-      },
-    });
-  } else {
-    const rightAnswer = await prisma.programmer.updateMany({
-      where: {
-        knownFor: {
-          equals: req.body.option,
-        },
-        name: {
-          equals: req.body.name,
-        },
-      },
-      data: {
-        vote: { increment: 2 },
-      },
-    });
-
-    if (Object.values(rightAnswer).includes(1)) {
-      res.json({ message: "Correct!" });
-    } else {
-      res.json({ message: "Wrong!" });
-      const wrongAnswer = await prisma.programmer.updateMany({
-        where: {
+async function giveTimeOutPenalty(programmerOrProject) {
+  const result = await prisma.programmer.updateMany({
+    where: {
+      OR: [
+        {
           name: {
-            equals: req.body.name,
+            equals: programmerOrProject,
           },
         },
-        data: {
-          vote: { decrement: 2 },
+        {
+          knownFor: {
+            equals: programmerOrProject,
+          },
         },
-      });
-    }
+      ],
+    },
+    data: {
+      vote: { decrement: 1 },
+    },
+  });
+  return result;
+}
+
+async function rightAnswer(name) {
+  const rightAnswer = await prisma.programmer.updateMany({
+    where: {
+      name: {
+        equals: name,
+      },
+    },
+    data: {
+      vote: { increment: 2 },
+    },
+  });
+  return rightAnswer;
+}
+
+async function wrongAnswer(name) {
+  const wrongAnswer = await prisma.programmer.updateMany({
+    where: {
+      name: {
+        equals: name,
+      },
+    },
+    data: {
+      vote: { decrement: 2 },
+    },
+  });
+  return wrongAnswer;
+}
+
+app.post("/questions/programmers/answer", async (req, res) => {
+  const programmer = await prisma.programmer.findMany({
+    where: {
+      name: {
+        equals: req.body.name,
+      },
+    },
+  });
+
+  if (req.body.option === "empty") {
+    res.json({ message: "Time out!" });
+    giveTimeOutPenalty(req.body.name);
+  } else if (programmer[0].knownFor === req.body.option) {
+    res.json({ message: "Correct!" });
+    rightAnswer(req.body.name);
+  } else {
+    res.json({ message: "Wrong!" });
+    wrongAnswer(req.body.name);
   }
 });
 
 app.post("/questions/projects/answer", async (req, res) => {
-  if (req.body.option === "empty") {
-    const timeOut = await prisma.programmer.updateMany({
-      where: {
-        knownFor: {
-          equals: req.body.project,
-        },
+  const programmer = await prisma.programmer.findMany({
+    where: {
+      knownFor: {
+        equals: req.body.project,
       },
-      data: {
-        vote: { decrement: 1 },
-      },
-    });
-    console.log(timeOut);
-    res.json({ message: "Time out!" });
-  } else {
-    const rightAnswer = await prisma.programmer.updateMany({
-      where: {
-        knownFor: {
-          equals: req.body.project,
-        },
-        name: {
-          equals: req.body.option,
-        },
-      },
-      data: {
-        vote: { increment: 2 },
-      },
-    });
+    },
+  });
 
-    if (Object.values(rightAnswer).includes(1)) {
-      res.json({ message: "Correct!" });
-    } else {
-      const wrongAnswer = await prisma.programmer.updateMany({
-        where: {
-          knownFor: {
-            equals: req.body.project,
-          },
-          name: {
-            not: req.body.option,
-          },
-        },
-        data: {
-          vote: { decrement: 2 },
-        },
-      });
-      res.json({ message: "Wrong!" });
-    }
+  if (req.body.option === "empty") {
+    giveTimeOutPenalty(req.body.project);
+    res.json({ message: "Time out!" });
+  } else if (programmer[0].name === req.body.option) {
+    rightAnswer(req.body.option);
+    res.json({ message: "Correct!" });
+  } else {
+    wrongAnswer(programmer[0].name);
+    res.json({ message: "Wrong!" });
   }
 });
 

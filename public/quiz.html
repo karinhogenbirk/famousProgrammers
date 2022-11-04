@@ -55,8 +55,6 @@
       var intervalId = setInterval(function () {
         if (timeleft <= 0) {
           stopTimer();
-          // vote("empty", data.name)
-          // voteTwo("empty", data.project)
           timeoutCallback();
         }
         document.getElementById("progressBar").value = 20 - timeleft;
@@ -70,7 +68,7 @@
       return stopTimer;
     }
 
-    async function getQuiz() {
+    async function getProgrammerQuestion() {
       const response = await fetch("./questions/programmers/random");
       const data = await response.json();
       console.log(data);
@@ -82,7 +80,7 @@
       const questionTitle = document.getElementById("question");
       questionTitle.innerText = "Which project is "+ data.name + " known for?";
 
-      const stopTimer = startTimer(() => { buttonDisabler(true); vote("empty", data.name) });
+      const stopTimer = startTimer(() => { buttonDisabler(true); checkAnswerProgrammer("empty", data.name) });
 
       for (let index = 0; index <= 3; index++) {
         const button = document.getElementById(`answer${index}`);
@@ -90,12 +88,12 @@
         button.onclick = () => {
           stopTimer(); 
           buttonDisabler(true);  
-          vote(button.innerText, data.name);
+          checkAnswerProgrammer(button.innerText, data.name);
         };
       }
     }
 
-    async function vote(answer, name) {
+    async function checkAnswerProgrammer(answer, name) {
       const response = await fetch("./questions/programmers/answer", {
         method: "POST",
         body: JSON.stringify({ name: name, option: answer }),
@@ -106,10 +104,10 @@
       const data = await response.json();
       document.getElementById("feedback").innerText = data.message;
 
-      getQuizTwo();
+      getProjectQuestion();
     }
 
-    async function getQuizTwo() {
+    async function getProjectQuestion() {
       const response = await fetch("./questions/projects/random");
       const data = await response.json();
       console.log(data);
@@ -120,7 +118,7 @@
       const questionTitle = document.getElementById("question");
       questionTitle.innerText = "Which programmer is known for: " + data.project + "?"
 
-      const stopTimer = startTimer(() => { buttonDisabler(true); voteTwo("empty", data.project) });
+      const stopTimer = startTimer(() => { buttonDisabler(true); checkAnswerProject("empty", data.project) });
 
       for (let index = 0; index <= 3; index++) {
         const button = document.getElementById(`answer${index}`);
@@ -128,12 +126,12 @@
         button.onclick = () => {
           stopTimer();
           buttonDisabler(true);
-          voteTwo(button.innerText, data.project);
+          checkAnswerProject(button.innerText, data.project);
         };
       }
     }
 
-    async function voteTwo(answer, project) {
+    async function checkAnswerProject(answer, project) {
       const response = await fetch("./questions/projects/answer", {
         method: "POST",
         body: JSON.stringify({ option: answer, project: project }),
@@ -147,13 +145,13 @@
       if (questionCount == 10) {
         window.location = "./results.html";
       } else {
-        getQuiz();
+        getProgrammerQuestion();
       }
     }
 
     let questionCount = 0;
 
-    getQuiz();
+    getProgrammerQuestion();
   </script>
 </html>
     
