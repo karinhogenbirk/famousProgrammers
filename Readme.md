@@ -4,6 +4,17 @@ The programmers´ quiz is developed to find out which programmers are easily rec
 The quiz takes random programmers and projects from a list of 345 programmers. It generates 10 random questions and saves answers in a database. 
 The calculated votes give us a top 5 of most famous programmers. Besides this, it´s a fun game to play! 
 
+What I have learned 
+The tools I have learned to build this project include: 
+* JavaScript basics
+* HTML basics 
+* CSS basics and responsive design
+* Data scraping 
+* Express
+* Prisma 
+* Postman 
+* Debugging
+
 How it works
 - scraper.js contains the code for the scraped data using JSDOM
 - The folder ´public´ contains the public HTML and CSS documents 
@@ -16,3 +27,6 @@ How it works
 1. clone the repo
 2. run `npm install`
 3. run `npm run dev` to start the server in development mode (with nodemon)
+4. run `npm run prisma:seed` to create a prisma client database 
+5. run `npx prisma studio` to access the database - you can check the votecount of the programmers here
+

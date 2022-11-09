@@ -17,7 +17,6 @@ async function getWikiPage() {
     {
       name: "Karin Hogenbirk",
       knownFor: "Creating the famous programmers' API",
-      id: 20,
       vote: 0,
     },
   ];

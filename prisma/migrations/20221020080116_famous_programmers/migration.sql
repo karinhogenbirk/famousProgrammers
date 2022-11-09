@@ -8,5 +8,6 @@ CREATE TABLE "Programmer" (
     CONSTRAINT "Programmer_pkey" PRIMARY KEY ("id")
 );
 
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Programmer_name_key" ON "Programmer"("name");

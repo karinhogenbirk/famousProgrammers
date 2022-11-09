@@ -41,6 +41,13 @@ h2 {
     margin-bottom: 25px;
 }
 
+form {
+    font-size: 16px;
+    font-family: 'Space Mono';
+    color: #00474B;
+    margin-bottom: 25px;
+}
+
 h3 {
     font-size: 16px;
     font-family: 'Space Mono';
