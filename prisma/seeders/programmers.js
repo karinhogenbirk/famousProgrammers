@@ -12,30 +12,30 @@ const prisma = new PrismaClient();
 // }
 
 //test users
-// async function main() {
-//   const user = await prisma.user.create({
-//     data: {
-//       email: "alice@prisma.io",
-//       password: "hallo",
-//     },
-//   });
-//   console.log(user);
-// }
+async function main() {
+  const user = await prisma.user.create({
+    data: {
+      email: "hoihoi@prisma.io",
+      password: "hallo",
+    },
+  });
+  console.log(user);
+}
 
 //test exists
 
-async function exists(args) {
-  const count = await prisma.user.count(args);
-  return Boolean(count);
-}
-async function main() {
-  const userExists = await exists({
-    where: {
-      email: "karinhogenbirk93@gmail.com",
-    },
-  });
-  console.log(userExists);
-}
+// async function exists(args) {
+//   const count = await prisma.user.count(args);
+//   return Boolean(count);
+// }
+// async function main() {
+//   const userExists = await exists({
+//     where: {
+//       email: "karinhogenbirk93@gmail.com",
+//     },
+//   });
+//   console.log(userExists);
+// }
 
 main()
   .then(async () => {

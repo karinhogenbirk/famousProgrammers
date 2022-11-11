@@ -17,4 +17,5 @@ model Programmer {
 model User {
   email String @unique
   password String
+  id Int @id @default(autoincrement())
 }

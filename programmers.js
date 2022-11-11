@@ -10,6 +10,7 @@ const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const z = require("zod");
+var jwt = require("jsonwebtoken");
 const PORT = process.env.PORT || 4000;
 
 // const programmers = require("./programmers.json");
@@ -168,7 +169,7 @@ app.post("/programmers/signup", async (req, res) => {
     });
     console.log(userExists);
     if (userExists === true) {
-      return res.status(404).json({ message: "This user already exists" });
+      return res.status(400).json({ message: "This user already exists" });
     } else {
       const newUser = await prisma.user.create({
         data: {
@@ -181,11 +182,38 @@ app.post("/programmers/signup", async (req, res) => {
   } catch (error) {
     console.log(error.name, error.issues);
     if (error.name === "ZodError") {
-      return res.status(404).json({
+      return res.status(400).json({
         message:
           "Please fill in a valid e-mail address and password (min. 5 characters)",
         errors: error.issues,
       });
+    }
+  }
+});
+
+app.post("/auth/login", async (req, res) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email: req.body.email,
+    },
+  });
+  console.log(user);
+
+  if (user == null) {
+    return res.status(401).json({ message: "Password or email incorrect" });
+  } else {
+    const hash = user.password;
+    const checkPassword = bcrypt.compareSync(req.body.password, hash);
+    // console.log(checkPassword);
+    if (checkPassword == false || user == null) {
+      return res.status(401).json({ message: "Password or email incorrect" });
+    } else {
+      const userId = user.id;
+      var token = jwt.sign({ id: userId }, "shhhhh");
+      console.log(token);
+      return res
+        .status(200)
+        .json({ message: "Log in successful", token: token });
     }
   }
 });
