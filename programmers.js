@@ -11,6 +11,7 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const z = require("zod");
 var jwt = require("jsonwebtoken");
+require("dotenv").config();
 const PORT = process.env.PORT || 4000;
 
 // const programmers = require("./programmers.json");
@@ -205,12 +206,16 @@ app.post("/auth/login", async (req, res) => {
     const hash = user.password;
     const checkPassword = bcrypt.compareSync(req.body.password, hash);
     // console.log(checkPassword);
-    if (checkPassword == false || user == null) {
+    if (checkPassword == false) {
       return res.status(401).json({ message: "Password or email incorrect" });
     } else {
       const userId = user.id;
-      var token = jwt.sign({ id: userId }, "shhhhh");
-      console.log(token);
+      var token = jwt.sign({ id: userId }, process.env.SECRET_TOKEN, {
+        expiresIn: "1h",
+      });
+
+      // console.log(token);
+
       return res
         .status(200)
         .json({ message: "Log in successful", token: token });
