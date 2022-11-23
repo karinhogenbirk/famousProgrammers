@@ -155,10 +155,11 @@ async function exists(args) {
   return Boolean(count);
 }
 
+const ValidEmail = z.string().email();
+const ValidPassword = z.string().min(5);
+
 app.post("/programmers/signup", async (req, res) => {
   try {
-    const ValidEmail = z.string().email();
-    const ValidPassword = z.string().min(5);
     const parsedEmail = ValidEmail.parse(req.body.email);
     const parsedPassword = ValidPassword.parse(req.body.password);
     const hash = bcrypt.hashSync(req.body.password, saltRounds);
@@ -193,32 +194,44 @@ app.post("/programmers/signup", async (req, res) => {
 });
 
 app.post("/auth/login", async (req, res) => {
-  const user = await prisma.user.findUnique({
-    where: {
-      email: req.body.email,
-    },
-  });
-  console.log(user);
+  try {
+    const parsedEmail = ValidEmail.parse(req.body.email);
+    console.log(parsedEmail);
+    const user = await prisma.user.findUnique({
+      where: {
+        email: req.body.email,
+      },
+    });
+    console.log(user);
 
-  if (user == null) {
-    return res.status(401).json({ message: "Password or email incorrect" });
-  } else {
-    const hash = user.password;
-    const checkPassword = bcrypt.compareSync(req.body.password, hash);
-    // console.log(checkPassword);
-    if (checkPassword == false) {
+    if (user == null) {
       return res.status(401).json({ message: "Password or email incorrect" });
     } else {
-      const userId = user.id;
-      var token = jwt.sign({ id: userId }, process.env.SECRET_TOKEN, {
-        expiresIn: "1h",
+      const hash = user.password;
+      const checkPassword = bcrypt.compareSync(req.body.password, hash);
+      console.log(checkPassword);
+      if (checkPassword == false) {
+        return res.status(401).json({ message: "Password or email incorrect" });
+      } else {
+        const userId = user.id;
+        var token = jwt.sign({ id: userId }, process.env.SECRET_TOKEN, {
+          expiresIn: "1h",
+        });
+
+        // console.log(token);
+
+        return res
+          .status(200)
+          .json({ message: "Log in successful", token: token });
+      }
+    }
+  } catch (error) {
+    console.log(error.name, error.issues);
+    if (error.name === "ZodError") {
+      return res.status(400).json({
+        message: "Please fill in a valid e-mail address",
+        errors: error.issues,
       });
-
-      // console.log(token);
-
-      return res
-        .status(200)
-        .json({ message: "Log in successful", token: token });
     }
   }
 });
