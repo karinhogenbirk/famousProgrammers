@@ -15,7 +15,16 @@
   </head>
   <body>
     <div class="card">
+      <div class = "header">
       <h1>PROGRAMMERS' QUIZ</h1>
+      <div class="dropdown">
+        <a href="#" class="dropbtn" onclick="dropDown()">Options</a>
+        <div id="myDropdown" class="dropdown-content">
+          <a href="./login.html">Log in</a><br />
+          <a href="./signup.html">Sign up </a>
+        </div>
+      </div>
+    </div>
       <div>
         <img
           src="/images/programmers.png"
@@ -40,4 +49,23 @@
       </div>
     </div>
   </body>
+  <script>
+    function dropDown() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
+
+  </script>
 </html>
