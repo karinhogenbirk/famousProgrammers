@@ -3,7 +3,7 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-// database vullen
+// to fill the database
 // async function main() {
 //   const programmer = await prisma.programmer.createMany({
 //     data: programmers,
@@ -21,21 +21,6 @@ async function main() {
   });
   console.log(user);
 }
-
-//test exists
-
-// async function exists(args) {
-//   const count = await prisma.user.count(args);
-//   return Boolean(count);
-// }
-// async function main() {
-//   const userExists = await exists({
-//     where: {
-//       email: "karinhogenbirk93@gmail.com",
-//     },
-//   });
-//   console.log(userExists);
-// }
 
 main()
   .then(async () => {

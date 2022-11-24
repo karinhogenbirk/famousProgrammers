@@ -14,8 +14,6 @@ var jwt = require("jsonwebtoken");
 require("dotenv").config();
 const PORT = process.env.PORT || 4000;
 
-// const programmers = require("./programmers.json");
-
 const {
   createRandomProgrammerQuestion,
   createRandomProjectQuestion,
@@ -155,8 +153,10 @@ async function exists(args) {
   return Boolean(count);
 }
 
+//zod validation
 const ValidEmail = z.string().email();
 const ValidPassword = z.string().min(5);
+const ValidToken = z.string();
 
 app.post("/programmers/signup", async (req, res) => {
   try {
@@ -193,38 +193,34 @@ app.post("/programmers/signup", async (req, res) => {
   }
 });
 
+function createToken(userId) {
+  var token = jwt.sign({ id: userId }, process.env.SECRET_TOKEN, {
+    expiresIn: "1h",
+  });
+  return token;
+}
+
 app.post("/auth/login", async (req, res) => {
   try {
     const parsedEmail = ValidEmail.parse(req.body.email);
-    console.log(parsedEmail);
     const user = await prisma.user.findUnique({
       where: {
         email: req.body.email,
       },
     });
-    console.log(user);
 
-    if (user == null) {
+    if (user === null) {
       return res.status(401).json({ message: "Password or email incorrect" });
-    } else {
-      const hash = user.password;
-      const checkPassword = bcrypt.compareSync(req.body.password, hash);
-      console.log(checkPassword);
-      if (checkPassword == false) {
-        return res.status(401).json({ message: "Password or email incorrect" });
-      } else {
-        const userId = user.id;
-        var token = jwt.sign({ id: userId }, process.env.SECRET_TOKEN, {
-          expiresIn: "1h",
-        });
-
-        // console.log(token);
-
-        return res
-          .status(200)
-          .json({ message: "Log in successful", token: token });
-      }
     }
+    const hash = user.password;
+    const checkPassword = bcrypt.compareSync(req.body.password, hash);
+
+    if (checkPassword === false) {
+      return res.status(401).json({ message: "Password or email incorrect" });
+    }
+    const token = createToken(user.id);
+    const parsedToken = ValidToken.parse(token);
+    return res.status(200).json({ message: "Log in successful", token: token });
   } catch (error) {
     console.log(error.name, error.issues);
     if (error.name === "ZodError") {
@@ -233,5 +229,6 @@ app.post("/auth/login", async (req, res) => {
         errors: error.issues,
       });
     }
+    return res.status(500).json({ message: "Oh no, something went wrong!" });
   }
 });
