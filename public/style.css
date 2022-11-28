@@ -15,7 +15,10 @@
 
 body {
     background-color: #C5E4E7;
+    font-family: 'Space Mono';
+    display: flex;
 }
+
 .card {
     width: 375px;
     height: 1000px;
@@ -29,7 +32,6 @@ body {
 }
 
 h1 {
-    font-family: 'Space Mono';
     color: #00474B;
     margin-bottom: 25px;
 }
@@ -43,13 +45,15 @@ h1 {
 .dropdown-content {
     display: none;
     position: absolute;
+    background-color: white;
     color: #5E7A7D;
+    border-style: hidden;
+    border-radius: 5px;
   }
 
   .show {display:block;}
 
 h2 {
-    font-family: 'Space Mono';
     font-size: 20px;
     color: #00474B;
     margin-bottom: 25px;
@@ -57,35 +61,35 @@ h2 {
 
 form {
     font-size: 16px;
-    font-family: 'Space Mono';
     color: #00474B;
     margin-bottom: 25px;
 }
 
 h3 {
     font-size: 16px;
-    font-family: 'Space Mono';
     color: #5E7A7D;
     margin-bottom: 25px;
 }
 
+h4 {
+    font-size: 12px;
+    color:  #5E7A7D;
+}
+
 p {
     font-size: 16px;
-    font-family: 'Space Mono';
     color: #00474B;
     margin-bottom: 25px;
 }
 
 a {
-    font-size: 16px;
-    font-family: 'Space Mono';
+    font-size: 14px;
     color: #00474B;
     background: transparent;
 }
 
 ol {
     font-size: 16px;
-    font-family: 'Space Mono';
     color: #00474B;
     margin-bottom: 25px;
     margin-left: 32px;
@@ -110,16 +114,20 @@ button {
     height: 150px;
     font-size: 10px;
     margin-bottom: 25px;
-    font-family: 'Space Mono';
     text-align: center;
     border-radius: 5px;
     border: none;
+    font-family: 'Space Mono';
 }
 
 button:hover {
     background-color: #C5E4E7;
     cursor: pointer;
 }
+
+/* button:visited {
+    background-color:#26C2AE;
+} */
 
 .buttons {
     display: flex;
@@ -157,6 +165,11 @@ progress {
     height: 25px;
   } 
 
+  footer {
+position: absolute;
+bottom: 0;
+  }
+
 @media only screen and (min-width: 992px) {
     body {
         display: flex;
@@ -185,6 +198,7 @@ progress {
         .card {
             margin: 0px;
             width: 100%;
+            height: 100%;
             border-radius: 0px;
             border: 4px solid #26C2AE;
         }

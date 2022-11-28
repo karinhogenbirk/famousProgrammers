@@ -11,17 +11,6 @@ const prisma = new PrismaClient();
 //   console.log(programmer);
 // }
 
-//test users
-async function main() {
-  const user = await prisma.user.create({
-    data: {
-      email: "hoihoi@prisma.io",
-      password: "hallo",
-    },
-  });
-  console.log(user);
-}
-
 main()
   .then(async () => {
     await prisma.$disconnect();

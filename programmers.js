@@ -5,6 +5,7 @@ const cors = require("cors");
 app.use(express.json());
 app.use(cors());
 app.use(express.static("public"));
+app.use(logger);
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
@@ -220,7 +221,7 @@ app.post("/auth/login", async (req, res) => {
     }
     const token = createToken(user.id);
     const parsedToken = ValidToken.parse(token);
-    return res.status(200).json({ message: "Log in successful", token: token });
+    return res.status(200).json({ user: user.email, token: token });
   } catch (error) {
     console.log(error.name, error.issues);
     if (error.name === "ZodError") {
@@ -231,4 +232,50 @@ app.post("/auth/login", async (req, res) => {
     }
     return res.status(500).json({ message: "Oh no, something went wrong!" });
   }
+});
+function logger(req, res, next) {
+  console.log(new Date(), req.method);
+  next();
+}
+
+async function authenticate(req, res, next) {
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader.split(" ")[1];
+    console.log(authHeader);
+
+    if (authHeader.includes("Bearer") === false) {
+      return res
+        .status(400)
+        .json({ message: "Bad request - header must include Bearer" });
+    }
+
+    if (!token) {
+      return res
+        .status(400)
+        .json({ message: "Bad request - invalid or empty token" });
+    }
+    var decoded = jwt.verify(token, process.env.SECRET_TOKEN);
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: decoded.id,
+      },
+    });
+    req.user = user;
+    next();
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(401)
+      .json({ errors: error, message: "Unauthorized - no user logged in" });
+  }
+}
+
+app.get("/test", (req, res) => {
+  return res.json({ message: "OK" });
+});
+
+app.get("/auth/me", authenticate, async (req, res) => {
+  return res.status(200).json({ user: req.user.email });
 });

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700&family=Lexend+Deca&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+          <h2>Admin page</h2>
+        <h4 id="user"></h4>
+        </div>
+        <h3 id="feedback"></h3>
+        <a href="./login.html" id="login"></a><br /><br />
+        <footer>
+        <a href="./index.html">Back to homepage</a>
+    </footer>
+  </div>
+</body>
+<script>
+
+const token = localStorage.getItem('token')
+
+async function checkAuthorization(token) {
+    const response = await fetch("./auth/me", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+    
+      if("errors" in data) {
+        localStorage.clear('token');
+        document.getElementById("feedback").innerText = data.message;
+        document.getElementById("login").innerText = "Login to your account";
+      }
+
+      if("user" in data) {
+        document.getElementById("user").innerText = data.user;
+      }
+    }
+
+    checkAuthorization(token)
+</script>
+</html>
