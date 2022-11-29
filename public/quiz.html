@@ -12,6 +12,7 @@
       rel="stylesheet"
     />
     <title>Document</title>
+    
   </head>
   <body>
     <div class="page">
@@ -19,7 +20,7 @@
         <h1>PROGRAMMERS' QUIZ</h1>
         <h2 id="count">1/10</h2>
         <h2 id="question">Question</h2>
-        <p id="feedback"></p>
+        <p id="feedback" class="feedback"></p>
         <h3>Select answer</h3>
         <div class="buttons">
           <button class="answer1" id="answer0">Answer 1</button>
@@ -36,6 +37,8 @@
   </body>
 
   <script>
+
+
     function updateQuestionCount() {
       const questionNumber = document.getElementById("count");
       questionNumber.innerText = questionCount + "/10";
@@ -103,7 +106,6 @@
       });
       const data = await response.json();
       document.getElementById("feedback").innerText = data.message;
-
       getProjectQuestion();
     }
 
