@@ -9,6 +9,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="./jwt-decode.js"></script>
 </head>
 <body>
     <div class="card">
@@ -18,16 +19,108 @@
         </div>
         <h3 id="feedback"></h3>
         <a href="./login.html" id="login"></a><br /><br />
-        <footer>
-        <a href="./index.html">Back to homepage</a>
-    </footer>
+
+  <div class="admin_page" id="admin_page">
+    <p>Hi! Congrats, you have access to the programmers database. 
+       You can update, delete or create a new programmer. 
+       <div class="CRUD_buttons">
+      <button onclick="showFindForm()">Find</button>
+       <button onclick="showUpdateForm()">Update</button>
+       <button>Delete</button>
+       <button onclick="showCreateForm()">Create</button>
+      </div>
+    </p>
   </div>
+  <div class="create_programmer" id="create_programmer">
+    <h2>Create a new programmer</h2>
+  <form action="./form.js" method="post" id="create">
+    <label for="name"> Programmer's first name:</label> <br>
+    <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="name" name="name" required > <br>
+    <label for="surname"> Programmer's surname:</label> <br>
+    <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="surname" name="surname" required > <br>
+    <label for="project"> Project(s):</label> <br>
+    <input type = "text" pattern="[A-Z\s\-][a-z\s\-]{5,100}" title="Must a be string, first letter uppercase" id="project" name="project" class="input_project" required> <br><br>
+    <button type="submit" class="start_button" >Add programmer</button>
+  </form>
+  <h3 id="return_message"></h3><br />
+<a href="#" onclick="showUpdateForm()" id="programmer_exists"></a><br />
+</div>
+<div class="update_programmer" id="update_programmer">
+<h2>Update a programmer</h2>
+<h3>Find the programmer by name</h3>
+<label for="name"> Programmer's first name:</label> <br>
+    <input type = "text" id="name" name="name" required > <br>
+    <label for="name"> Programmer's surname:</label> <br>
+    <input type = "text" id="surname" name="surname" required > <br><br>
+    <button type="submit" class="start_button" >Find</button>
+</div>
+<div class="find_programmer" id="find_programmer">
+  <h2>Find a programmer</h2>
+<h3>Search by name</h3>
+<form method="post" id="find">
+<label for="name"> Programmer's first name:</label> <br>
+    <input type = "text" pattern="[A-z]{2,}" title="Must contain at least 2 characters, no number" id="nameFind" name="name" > <br>
+    <label for="surname"> Programmer's surname:</label> <br>
+    <input type = "text" pattern="[A-z]{2,}" title="Must contain at least 2 characters, no number" id="surnameFind" name="surname"> <br><br>
+    <button type="submit" class="start_button" >Find</button>
+  </form>
+  <h3 id="programmer_message"></h3>
+  <h4 id="programmer_info"></h4> 
+</div>
+<footer>
+  <a href="./index.html">Back to homepage</a>
+</footer>
+</div>
 </body>
 <script>
+  function showCreateForm() {
+  admin_page.style.display="none";
+  create_programmer.style.display = "block";
+}
+
+function showUpdateForm() {
+  create_programmer.style.display="none";
+  admin_page.style.display="none";
+  update_programmer.style.display = "block";
+}
+
+function showFindForm() {
+  admin_page.style.display="none";
+  find_programmer.style.display = "block";
+}
+
+function getTimestampInSeconds () {
+  return Math.floor(Date.now() / 1000)
+}
+
+function logOut(message) {
+  localStorage.clear('token');
+  document.getElementById("feedback").innerText = message;
+  document.getElementById("login").innerText = "Login to your account";
+  admin_page.style.display="none";
+  find_programmer.style.display="none";
+  update_programmer.style.display="none";
+  create_programmer.style.display="none";
+}
+
+function logIn(user) {
+    document.getElementById("user").innerText = user;
+    admin_page.style.display ="block";
+}
 
 const token = localStorage.getItem('token')
 
 async function checkAuthorization(token) {
+  if(!token) {
+    return logOut("You are not logged in")
+  }
+  var decoded = jwt_decode(token);
+  const currentTimeUnix = getTimestampInSeconds()
+  const remainingTimeSeconds = decoded.exp - currentTimeUnix
+  console.log(decoded, currentTimeUnix, remainingTimeSeconds)
+  if (remainingTimeSeconds < 0) {
+    return logOut("You are not logged in")
+  }
     const response = await fetch("./auth/me", {
         method: "GET",
         headers: {
@@ -38,16 +131,88 @@ async function checkAuthorization(token) {
       const data = await response.json();
     
       if("errors" in data) {
-        localStorage.clear('token');
-        document.getElementById("feedback").innerText = data.message;
-        document.getElementById("login").innerText = "Login to your account";
+      logOut(data.message);
       }
 
       if("user" in data) {
-        document.getElementById("user").innerText = data.user;
+      logIn(data.user);
+      setTimeout(()=> logOut("Your session is expired"), (remainingTimeSeconds-30)*1000)
       }
     }
 
+    let formCreate = document.getElementById("create");
+
+formCreate.addEventListener('submit', function(event) {
+  event.preventDefault()
+
+  var firstname = document.getElementById('name').value
+  var surname = document.getElementById('surname').value
+  var name = firstname + " " + surname;
+  var project = document.getElementById('project').value
+
+  console.log(name, project)
+
+  createProgrammer(name, project)
+})
+
+let formFind = document.getElementById("find");
+
+formFind.addEventListener('submit', function(event) {
+  event.preventDefault()
+
+  var firstname = document.getElementById("nameFind").value
+  var surname = document.getElementById('surnameFind').value
+
+  console.log(name)
+
+  findProgrammer(firstname, surname)
+
+})
+
+async function findProgrammer(firstname, surname) {
+  const response = await fetch("./auth/find", {
+    method: "POST", 
+    body: JSON.stringify({ firstname: firstname, surname: surname }),
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  const data = await response.json();
+  const programmerList = data.programmer
+
+  document.getElementById("programmer_message").innerText = data.message
+
+  console.log(programmerList.length)
+  for (let index = 0; index < programmerList.length; index++) {
+    const programmer = programmerList[index];
+    console.log(programmer.name)
+      document.getElementById("programmer_info").innerText += programmer.name + ": " + programmer.knownFor + "\n\n ";
+  }
+   
+  }
+
+
+async function createProgrammer(name, project) {
+  const response = await fetch("./auth/create", {
+    method: "POST", 
+    body: JSON.stringify({ name: name, project: project }),
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  const data = await response.json();
+
+    if(data) {
+  document.getElementById("return_message").innerText = data.message
+  }
+  if(response.status=400){
+document.getElementById("programmer_exists").innerText = "Update page"
+  }
+}
+
+    
     checkAuthorization(token)
 </script>
 </html>

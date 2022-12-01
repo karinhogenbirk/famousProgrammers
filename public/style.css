@@ -134,16 +134,37 @@ button:hover {
     margin-bottom: 35px;
 }
 
-
-/* .feedback {
-    display: none;
-} */
+.CRUD_buttons {
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+    height: 80px;
+    font-size: 24px;
+}
 
 .start_button {
     width: 150px;
     height: 50px;
     font-size: 16px;
 }
+
+.admin_page {
+    display: none;
+}
+
+.create_programmer {
+    display: none;
+}
+
+.update_programmer {
+    display: none;
+}
+
+.find_programmer {
+    display:none;
+}
+
+
 .time {
     width: 30px;
     height: 35px;
@@ -161,6 +182,15 @@ button:hover {
     flex-direction: row;
 }
 
+input:invalid {
+    background-color: #FFF0F5;
+    border: none;
+    outline: 1px solid red;
+}
+
+.input_project {
+line-height: 50px;
+}
 
 progress {
     color: #00474B;
@@ -168,8 +198,9 @@ progress {
   } 
 
   footer {
-position: absolute;
-bottom: 0;
+    position: fixed;
+    bottom: 0;
+    margin:auto;
   }
 
 @media only screen and (min-width: 992px) {

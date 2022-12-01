@@ -19,6 +19,7 @@ const {
   createRandomProgrammerQuestion,
   createRandomProjectQuestion,
 } = require("./utils/questions");
+const { empty } = require("@prisma/client/runtime");
 
 app.listen(PORT, () => {
   console.log("It works!");
@@ -149,8 +150,8 @@ app.get("/questions/results", async (req, res) => {
   return res.json(sortedHighscores);
 });
 
-async function exists(args) {
-  const count = await prisma.user.count(args);
+async function exists(args, model) {
+  const count = await prisma[model].count(args);
   return Boolean(count);
 }
 
@@ -158,6 +159,8 @@ async function exists(args) {
 const ValidEmail = z.string().email();
 const ValidPassword = z.string().min(5);
 const ValidToken = z.string();
+const ValidProgrammer = z.string().min(2);
+const ValidProject = z.string().min(5);
 
 app.post("/programmers/signup", async (req, res) => {
   try {
@@ -165,11 +168,14 @@ app.post("/programmers/signup", async (req, res) => {
     const parsedPassword = ValidPassword.parse(req.body.password);
     const hash = bcrypt.hashSync(req.body.password, saltRounds);
     console.log(parsedEmail, parsedPassword);
-    const userExists = await exists({
-      where: {
-        email: req.body.email,
+    const userExists = await exists(
+      {
+        where: {
+          email: req.body.email,
+        },
       },
-    });
+      "user"
+    );
     console.log(userExists);
     if (userExists === true) {
       return res.status(400).json({ message: "This user already exists" });
@@ -233,6 +239,7 @@ app.post("/auth/login", async (req, res) => {
     return res.status(500).json({ message: "Oh no, something went wrong!" });
   }
 });
+
 function logger(req, res, next) {
   console.log(new Date(), req.method);
   next();
@@ -278,4 +285,129 @@ app.get("/test", (req, res) => {
 
 app.get("/auth/me", authenticate, async (req, res) => {
   return res.status(200).json({ user: req.user.email });
+});
+
+function capitalizeFirstLetter(string) {
+  const capitalize = string.charAt(0).toUpperCase() + string.slice(1);
+  return capitalize;
+}
+
+function programmerNotFound(name, res) {
+  return res.status(404).json({ message: `Programmer ${name} not found` });
+}
+
+async function firstNameCheck(firstName, res) {
+  const programmerFirstName = await prisma.programmer.findMany({
+    where: {
+      name: {
+        startsWith: firstName,
+      },
+    },
+  });
+  if (programmerFirstName[0] === undefined) {
+    programmerNotFound(firstName, res);
+  } else {
+    return res.status(200).json({
+      message: "Programmers found:",
+      programmer: programmerFirstName,
+    });
+  }
+}
+
+async function lastNameCheck(lastName, res) {
+  const programmerLastName = await prisma.programmer.findMany({
+    where: {
+      name: {
+        endsWith: lastName,
+      },
+    },
+  });
+  if (programmerLastName[0] === undefined) {
+    programmerNotFound(lastName, res);
+  } else {
+    return res
+      .status(200)
+      .json({ message: "Programmers found:", programmer: programmerLastName });
+  }
+}
+
+async function fullNameCheck(fullName, res) {
+  const programmerName = await prisma.programmer.findMany({
+    where: {
+      name: fullName,
+    },
+  });
+  if (programmerName[0] === undefined) {
+    programmerNotFound(fullName, res);
+  } else {
+    return res
+      .status(200)
+      .json({ message: "Programmers found:", programmer: programmerName });
+  }
+}
+
+app.post("/auth/find", authenticate, async (req, res) => {
+  try {
+    const firstName = capitalizeFirstLetter(req.body.firstname);
+    const lastName = capitalizeFirstLetter(req.body.surname);
+    const fullName = firstName + " " + lastName;
+
+    if (req.body.surname === "") {
+      firstNameCheck(firstName, res);
+    } else if (req.body.firstname === "") {
+      lastNameCheck(lastName, res);
+    } else {
+      fullNameCheck(fullName, res);
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Oops, something went wrong" });
+  }
+});
+
+app.post("/auth/create", authenticate, async (req, res) => {
+  try {
+    const parsedProgrammer = ValidProgrammer.parse(req.body.name);
+    const parsedProject = ValidProject.parse(req.body.project);
+    const programmerExists = await exists(
+      {
+        where: {
+          name: req.body.name,
+        },
+      },
+      "programmer"
+    );
+
+    if (programmerExists === true) {
+      return res.status(400).json({
+        message:
+          "This programmer already exists in the database. To update, go to the update page.",
+      });
+    }
+
+    const newProgrammer = await prisma.programmer.create({
+      data: {
+        name: req.body.name,
+        knownFor: req.body.project,
+        vote: 0,
+      },
+    });
+
+    return res.status(201).json({
+      message: "Programmer added! Thank you for the update.",
+      programmer: req.body.name,
+      project: req.body.project,
+    });
+  } catch (error) {
+    console.log(error.issues, error.name);
+    if (error.name === "ZodError") {
+      return res.status(400).json({
+        message: "Bad request - must have enough characters",
+        errors: error.issues,
+      });
+    }
+    return res.status(500).json({
+      message: "Oops, something went wrong!",
+    });
+  }
 });
