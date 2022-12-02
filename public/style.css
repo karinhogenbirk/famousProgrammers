@@ -168,6 +168,10 @@ button:hover {
     display:none;
 }
 
+.login_page {
+    display: none;
+}
+
 .time {
     width: 30px;
     height: 35px;

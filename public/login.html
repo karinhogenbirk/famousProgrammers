@@ -9,6 +9,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="./jwt-decode.js"></script>
 </head>
 <body>
     <div class="card">
@@ -16,6 +17,7 @@
         <h2>Login to your account</h2>
         <a href="./index.html">Homepage</a>  
     </div>
+    <div class="login_page" id="login_page">
 <form action="./form.js" method="post" id="login">
     <label for="email"> E-mail address:</label> <br>
     <input type = "text" id="email" name="email" required> <br>
@@ -23,10 +25,30 @@
     <input type = "text" id="password" name="password" required> <br><br>
     <button type="submit" class="start_button" >Log in</button>
 </form>
+</div>
 <p id="feedback"></p>
+<a href="./admin.html" id="goto_admin"></a>
 </div>
 </body>
 <script>
+
+function getTimestampInSeconds () {
+  return Math.floor(Date.now() / 1000)
+}
+
+    const token = localStorage.getItem('token')
+    var decoded = jwt_decode(token);
+    const currentTimeUnix = getTimestampInSeconds()
+    const remainingTimeSeconds = decoded.exp - currentTimeUnix
+    console.log(decoded, currentTimeUnix, remainingTimeSeconds)
+    if(remainingTimeSeconds > 30) {
+    login_page.style.display ="none";
+    document.getElementById("feedback").innerText = "You are already logged in!"
+    document.getElementById("goto_admin").innerText = "Go to admin page"
+    } else {
+    login_page.style.display ="block";
+    }
+
 //get the data from the form
 let form = document.getElementById("login");
 
@@ -58,6 +80,7 @@ form.addEventListener('submit', function(event) {
     if(data.token) {
         window.location = "./admin.html";
     }
+
     }
 
 
