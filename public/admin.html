@@ -26,11 +26,24 @@
        <div class="CRUD_buttons">
       <button onclick="showFindForm()">Find</button>
        <button onclick="showUpdateForm()">Update</button>
-       <button>Delete</button>
+       <button onclick="showDeleteForm()">Delete</button>
        <button onclick="showCreateForm()">Create</button>
       </div>
     </p>
   </div>
+  <div class="delete_programmer" id="delete_programmer">
+    <h2>Delete a programmer from the database</h2>
+  <form method="delete" id="delete">
+  <label for="name"> Programmer's first name:</label> <br>
+      <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="nameDelete" name="nameDelete" > <br>
+      <label for="surname"> Programmer's surname:</label> <br>
+      <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="surnameDelete" name="surnameDelete"> <br><br>
+      <button type="submit" class="start_button" >Delete programmer</button>
+    </form>
+    <h3 id="deleted_message"></h3>
+    <h4 id="deleted_info"></h4> 
+  </div>
+
   <div class="create_programmer" id="create_programmer">
     <h2>Create a new programmer</h2>
   <form action="./form.js" method="post" id="create">
@@ -39,7 +52,7 @@
     <label for="surname"> Programmer's surname:</label> <br>
     <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="surname" name="surname" required > <br>
     <label for="project"> Project(s):</label> <br>
-    <input type = "text" pattern="[A-Z\s\-][a-z\s\-]{5,100}" title="Must a be string, first letter uppercase" id="project" name="project" class="input_project" required> <br><br>
+    <input type = "text" pattern="[A-z\s\-]{5,100}" title="Must a be string, at least 5 characters" id="project" name="project" class="input_project" required> <br><br>
     <button type="submit" class="start_button" >Add programmer</button>
   </form>
   <h3 id="return_message"></h3><br />
@@ -47,21 +60,27 @@
 </div>
 <div class="update_programmer" id="update_programmer">
 <h2>Update a programmer</h2>
-<h3>Find the programmer by name</h3>
+<h3>Which programmer would you like to update?</h3>
+<form method="post" id="update">
 <label for="name"> Programmer's first name:</label> <br>
-    <input type = "text" id="name" name="name" required > <br>
+    <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="nameUpdate" name="name" required > <br>
     <label for="name"> Programmer's surname:</label> <br>
-    <input type = "text" id="surname" name="surname" required > <br><br>
-    <button type="submit" class="start_button" >Find</button>
+    <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="surnameUpdate" name="surname" required > <br><br />
+    <h3> Which projects is this programmer known for?</h3>
+    <input type = "text" pattern="[A-z\s\-]{5,100}" title="Must a be string, at least 5 characters" id="projectUpdate" name="project" required > <br><br>
+    <button type="submit" class="start_button" >Update programmer</button>
+  </form>
+  <h3 id="programmer_updated"></h3>
+  <h4 id="updated_info"></h4>
 </div>
 <div class="find_programmer" id="find_programmer">
   <h2>Find a programmer</h2>
 <h3>Search by name</h3>
 <form method="post" id="find">
 <label for="name"> Programmer's first name:</label> <br>
-    <input type = "text" pattern="[A-z]{2,}" title="Must contain at least 2 characters, no number" id="nameFind" name="name" > <br>
+    <input type = "text" pattern="[A-z]{1,}" title="Must contain at least 1 character, no number" id="nameFind" name="name" > <br>
     <label for="surname"> Programmer's surname:</label> <br>
-    <input type = "text" pattern="[A-z]{2,}" title="Must contain at least 2 characters, no number" id="surnameFind" name="surname"> <br><br>
+    <input type = "text" pattern="[A-z]{1,}" title="Must contain at least 1 character, no number" id="surnameFind" name="surname"> <br><br>
     <button type="submit" class="start_button" >Find</button>
   </form>
   <h3 id="programmer_message"></h3>
@@ -77,6 +96,11 @@
   admin_page.style.display="none";
   create_programmer.style.display = "block";
 }
+
+function showDeleteForm() {
+  admin_page.style.display="none";
+  delete_programmer.style.display = "block";
+} 
 
 function showUpdateForm() {
   create_programmer.style.display="none";
@@ -101,6 +125,7 @@ function logOut(message) {
   find_programmer.style.display="none";
   update_programmer.style.display="none";
   create_programmer.style.display="none";
+  delete_programmer.style.display="none";
 }
 
 function logIn(user) {
@@ -140,9 +165,9 @@ async function checkAuthorization(token) {
       }
     }
 
-    let formCreate = document.getElementById("create");
+  let formCreate = document.getElementById("create");
 
-formCreate.addEventListener('submit', function(event) {
+  formCreate.addEventListener('submit', function(event) {
   event.preventDefault()
 
   var firstname = document.getElementById('name').value
@@ -163,11 +188,54 @@ formFind.addEventListener('submit', function(event) {
   var firstname = document.getElementById("nameFind").value
   var surname = document.getElementById('surnameFind').value
 
-  console.log(name)
-
   findProgrammer(firstname, surname)
 
 })
+
+let formUpdate = document.getElementById("update");
+
+formUpdate.addEventListener('submit', function(event){
+  event.preventDefault()
+
+  var firstname = document.getElementById("nameUpdate").value;
+  var surname = document.getElementById("surnameUpdate").value;
+  var project = document.getElementById("projectUpdate").value;
+
+  updateProgrammer(firstname, surname, project)
+
+})
+
+let formDelete = document.getElementById("delete");
+
+formDelete.addEventListener('submit', function(event) {
+  event.preventDefault()
+
+  var firstname = document.getElementById("nameDelete").value;
+  var surname = document.getElementById("surnameDelete").value;
+
+  console.log(firstname, surname)
+
+  deleteProgrammer(firstname, surname)
+  
+})
+
+async function deleteProgrammer(firstname, surname) {
+  const response = await fetch("./auth/delete", {
+    method: "DELETE", 
+    body: JSON.stringify({ firstname: firstname, surname: surname }),
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  const data = await response.json();
+
+  document.getElementById("deleted_message").innerText = data.message;
+
+  if(response.status===201) {
+    document.getElementById("deleted_info").innerText = data.programmer;
+  }
+}
 
 async function findProgrammer(firstname, surname) {
   const response = await fetch("./auth/find", {
@@ -187,9 +255,8 @@ async function findProgrammer(firstname, surname) {
   for (let index = 0; index < programmerList.length; index++) {
     const programmer = programmerList[index];
     console.log(programmer.name)
-      document.getElementById("programmer_info").innerText += programmer.name + ": " + programmer.knownFor + "\n\n ";
+    document.getElementById("programmer_info").innerText += programmer.name + ": " + programmer.knownFor + "\n\n ";
   }
-   
   }
 
 
@@ -203,15 +270,32 @@ async function createProgrammer(name, project) {
     },
   });
   const data = await response.json();
+  console.log(data)
 
-    if(data) {
-  document.getElementById("return_message").innerText = data.message
-  }
-  if(response.status=400){
-document.getElementById("programmer_exists").innerText = "Update page"
-  }
+  document.getElementById("return_message").innerText = data.message;
+
+  if(response.status===400) {
+    document.getElementById("programmer_exists").innerText = "Update page"
+  } 
 }
 
+async function updateProgrammer(firstname, surname, project) {
+  const response = await fetch("./auth/update", {
+    method: "PATCH", 
+    body: JSON.stringify({ firstname: firstname, surname: surname, project: project }),
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  const data = await response.json();
+
+  document.getElementById("programmer_updated").innerText = data.message;
+
+  if(response.status===201) {
+    document.getElementById("updated_info").innerText = data.programmer;
+  }
+}
     
     checkAuthorization(token)
 </script>

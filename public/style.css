@@ -21,7 +21,7 @@ body {
 
 .card {
     width: 375px;
-    height: 1000px;
+    min-height: 1000px;
     border-radius: 25px;
     margin-top: 144px;
     margin-bottom: 144px;
@@ -164,6 +164,9 @@ button:hover {
     display:none;
 }
 
+.delete_programmer {
+    display:none;
+}
 
 .time {
     width: 30px;

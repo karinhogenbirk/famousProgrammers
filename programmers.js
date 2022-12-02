@@ -159,7 +159,7 @@ async function exists(args, model) {
 const ValidEmail = z.string().email();
 const ValidPassword = z.string().min(5);
 const ValidToken = z.string();
-const ValidProgrammer = z.string().min(2);
+const ValidProgrammer = z.string().min(1);
 const ValidProject = z.string().min(5);
 
 app.post("/programmers/signup", async (req, res) => {
@@ -301,6 +301,7 @@ async function firstNameCheck(firstName, res) {
     where: {
       name: {
         startsWith: firstName,
+        mode: "insensitive",
       },
     },
   });
@@ -319,6 +320,7 @@ async function lastNameCheck(lastName, res) {
     where: {
       name: {
         endsWith: lastName,
+        mode: "insensitive",
       },
     },
   });
@@ -335,6 +337,7 @@ async function fullNameCheck(fullName, res) {
   const programmerName = await prisma.programmer.findMany({
     where: {
       name: fullName,
+      mode: "insensitive",
     },
   });
   if (programmerName[0] === undefined) {
@@ -347,16 +350,18 @@ async function fullNameCheck(fullName, res) {
 }
 
 app.post("/auth/find", authenticate, async (req, res) => {
+  if (!req.body.firstname && !req.body.surname) {
+    return res
+      .status(400)
+      .json({ message: "Please fill in a first name or last name" });
+  }
   try {
-    const firstName = capitalizeFirstLetter(req.body.firstname);
-    const lastName = capitalizeFirstLetter(req.body.surname);
-    const fullName = firstName + " " + lastName;
-
-    if (req.body.surname === "") {
-      firstNameCheck(firstName, res);
-    } else if (req.body.firstname === "") {
-      lastNameCheck(lastName, res);
+    if (req.body.surname === "" || req.body.surname === undefined) {
+      firstNameCheck(req.body.firstname, res);
+    } else if (req.body.firstname === "" || req.body.firstname === undefined) {
+      lastNameCheck(req.body.surname, res);
     } else {
+      const fullName = req.body.firstname + " " + req.body.surname;
       fullNameCheck(fullName, res);
     }
   } catch (error) {
@@ -409,5 +414,91 @@ app.post("/auth/create", authenticate, async (req, res) => {
     return res.status(500).json({
       message: "Oops, something went wrong!",
     });
+  }
+});
+
+app.patch("/auth/update", authenticate, async (req, res) => {
+  if (!req.body.firstname && !req.body.surname) {
+    return res
+      .status(400)
+      .json({ message: "Please fill in a first name and last name" });
+  }
+  try {
+    const parsedFirstName = ValidProgrammer.parse(req.body.firstname);
+    const parsedLastName = ValidProgrammer.parse(req.body.surname);
+    const parsedProject = ValidProject.parse(req.body.project);
+    const fullName = req.body.firstname + " " + req.body.surname;
+    const projectExists = await exists(
+      {
+        where: {
+          knownFor: req.body.project,
+        },
+      },
+      "programmer"
+    );
+
+    if (projectExists === true) {
+      return res.status(400).json({
+        message: "Project already exists in database. No changes made",
+      });
+    }
+
+    const programmer = await prisma.programmer.updateMany({
+      where: {
+        name: fullName,
+      },
+      data: {
+        knownFor: req.body.project,
+      },
+    });
+
+    return res.status(201).json({
+      message: "Programmer updated! New data: ",
+      programmer: fullName + ": " + req.body.project,
+    });
+  } catch (error) {
+    console.log(error);
+    if (error.name === "ZodError") {
+      return res.status(400).json({
+        message: "Bad request - must have enough characters",
+        errors: error.issues,
+      });
+    }
+    return res.status(500).json({ message: "Oops, something went wrong" });
+  }
+});
+
+app.delete("/auth/delete", authenticate, async (req, res) => {
+  if (!req.body.firstname && !req.body.surname) {
+    return res
+      .status(400)
+      .json({ message: "Please fill in a first name and last name" });
+  }
+  try {
+    const parsedFirstName = ValidProgrammer.parse(req.body.firstname);
+    const parsedLastName = ValidProgrammer.parse(req.body.surname);
+    const fullName = req.body.firstname + " " + req.body.surname;
+    const programmerToDelete = await prisma.programmer.deleteMany({
+      where: {
+        name: fullName,
+      },
+    });
+
+    if (programmerToDelete.count === 0) {
+      programmerNotFound(fullName, res);
+    } else {
+      return res
+        .status(201)
+        .json({ message: "Programmer deleted: ", programmer: fullName });
+    }
+  } catch (error) {
+    console.log(error);
+    if (error.name === "ZodError") {
+      return res.status(400).json({
+        message: "Bad request - must have enough characters",
+        errors: error.issues,
+      });
+    }
+    return res.status(500).json({ message: "Oops, something went wrong" });
   }
 });
