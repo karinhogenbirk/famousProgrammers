@@ -196,7 +196,9 @@ input:invalid {
 }
 
 .input_project {
-line-height: 50px;
+ min-height: 100px;
+ text-align:start;
+ padding: 1%;
 }
 
 progress {
