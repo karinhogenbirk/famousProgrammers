@@ -1,6 +1,6 @@
 # Famous programmers
 
-The programmers´ quiz is developed to find out which programmers are easily recognized and therefore can be seen as most ´famous´. 
+The programmers´ quiz is developed to determine which programmers are easily recognized and therefore can be seen as most ´famous´. 
 The quiz takes random programmers and projects from a list of 345 programmers. It generates 10 random questions and saves answers in a database. 
 The calculated votes give us a top 5 of most famous programmers. Besides this, it´s a fun game to play! 
 
@@ -10,7 +10,7 @@ The tools I have learned to build this project include:
 * JavaScript basics
 * HTML basics 
 * CSS basics and responsive design
-* Data scraping 
+* Data scraping using JSDOM
 * Express
 * Prisma 
 * Postman 
@@ -19,8 +19,10 @@ The tools I have learned to build this project include:
 * Hashing passwords
 * JWT authorization
 * Middleware
+* Routers
 
 ## How it works
+
 - scraper.js contains the code for the scraped data using JSDOM
 - The folder ´public´ contains the public HTML and CSS documents 
 - The utilities to create random questions are written in 'utils'
