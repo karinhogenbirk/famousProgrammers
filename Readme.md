@@ -20,6 +20,7 @@ The tools I have learned to build this project include:
 * JWT authorization
 * Middleware
 * Routers
+* Automated testing with supertest
 * Github actions
 * Cypress
 
