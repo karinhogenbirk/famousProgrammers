@@ -20,6 +20,7 @@ The tools I have learned to build this project include:
 * JWT authorization
 * Middleware
 * Routers
+* Github actions
 
 ## How it works
 
