@@ -21,6 +21,7 @@ The tools I have learned to build this project include:
 * Middleware
 * Routers
 * Github actions
+* Cypress
 
 ## How it works
 
