@@ -1,11 +1,11 @@
 const express = require("express");
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+
 const z = require("zod");
 var router = express.Router();
 const ValidProgrammer = z.string().min(1);
 const ValidProject = z.string().min(5);
 const { empty } = require("@prisma/client/runtime");
+const prisma = require("../prisma/client");
 
 async function exists(args, model) {
   const count = await prisma[model].count(args);

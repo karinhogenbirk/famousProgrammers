@@ -3,9 +3,8 @@ const {
   createRandomProgrammerQuestion,
   createRandomProjectQuestion,
 } = require("../utils/questions");
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
 const { empty } = require("@prisma/client/runtime");
+const prisma = require("../prisma/client");
 
 var router = express.Router();
 

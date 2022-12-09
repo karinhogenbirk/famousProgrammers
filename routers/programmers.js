@@ -2,14 +2,13 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 var router = express.Router();
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
 const { empty } = require("@prisma/client/runtime");
 const z = require("zod");
 const ValidEmail = z.string().email();
 const ValidPassword = z.string().min(5);
 const ValidToken = z.string();
 var jwt = require("jsonwebtoken");
+const prisma = require("../prisma/client");
 require("dotenv").config();
 
 async function exists(args, model) {
