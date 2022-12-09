@@ -1,6 +1,7 @@
 const app = require("./programmers");
 const request = require("supertest");
 const prisma = require("./prisma/client");
+var jwt = require("jsonwebtoken");
 
 const testApp = request(app);
 afterEach(async function () {
@@ -43,15 +44,6 @@ describe("GET /questions/results", () => {
   });
 });
 
-describe("GET /auth/me", () => {
-  test("Should check if authenticated or not", async () => {
-    const path = "/auth/me";
-    const response = await testApp.get(path);
-
-    console.log(response.body);
-  });
-});
-
 async function clearUser(newUser) {
   const clearUser = await prisma.user.deleteMany({
     where: {
@@ -87,36 +79,89 @@ describe("POST /signup and login", () => {
   });
 });
 
-// let auth = {};
+var token = jwt.sign({ id: 1 }, process.env.SECRET_TOKEN, {
+  expiresIn: "1h",
+});
 
-// async function before(response) {
-//   const hashedPassword = await bcrypt.hash("secret", 1);
-//   await prisma.user.create( {
-// user: "test", password: "secret"
-//   })
-//     `INSERT INTO users (username, password)
-//         VALUES ('test', $1)`,
-//     [hashedPassword];
-//   const response = await request(app)
-//     .post("/auth/me")
-//     .send({
-//       username: "test",
-//       password: "secret"
-//     });
+describe("GET /auth/me", (authentication) => {
+  test("Should return user when authenticated", async () => {
+    const path = "/auth/me";
+    const response = await testApp
+      .get(path)
+      .set("Authorization", `Bearer ${token}`);
 
-//   // we'll need the token for future requests
-//   auth.token = response.body.token;
+    console.log(response.body);
 
-//   // we'll need the user_id for future requests
-//   auth.curr_user_id = "test"
-// };
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ user: expect.any(String) });
+  });
 
-// describe("POST /auth", () => {
-//   test("Should require authentication", async function (done) {
-//     const path = "/auth/me";
-//     const response = await testApp.get(path);
+  test("Should return bad request with no bearer", async () => {
+    const path = "/auth/me";
+    const response = await testApp.get(path).set("Authorization", token);
 
-//     before(response)
+    console.log(response.body);
 
-//   });
-// });
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "Bad request - header must include Bearer"
+    );
+  });
+
+  test("Should return bad request without token", async () => {
+    const path = "/auth/me";
+    const response = await testApp.get(path).set("Authorization", "Bearer ");
+    console.log(response.body);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe("Bad request - invalid or empty token");
+  });
+});
+
+async function clearProgrammer(newProgrammer) {
+  const clearUser = await prisma.programmer.deleteMany({
+    where: {
+      name: newProgrammer.name,
+    },
+  });
+  await prisma.$disconnect();
+}
+
+describe("POST /auth/create", () => {
+  test("Should be able to create new programmer", async () => {
+    const path = "/auth/create";
+    const newProgrammer = {
+      name: "Alfred Hogenbirk",
+      project: "Test case",
+      vote: 0,
+    };
+    const response = await testApp
+      .post(path)
+      .send(newProgrammer)
+      .set("Authorization", `Bearer ${token}`);
+    console.log(response.body);
+
+    expect(response.status).toBe(201);
+    expect(response.body.message).toBe(
+      "Programmer added! Thank you for the update."
+    );
+
+    await clearProgrammer(newProgrammer);
+  });
+});
+
+describe("POST /auth/find", () => {
+  test("Should be able to find a new programmer with full name", async () => {
+    const path = "/auth/find";
+    const findProgrammer = { firstname: "karin", surname: "hogenbirk" };
+
+    const response = await testApp
+      .post(path)
+      .send(findProgrammer)
+      .set("Authorization", `Bearer ${token}`);
+    console.log(response.body);
+
+    expect(response.status).toBe(200);
+    expect(response.body.message).toBe("Programmer found:");
+  });
+});
