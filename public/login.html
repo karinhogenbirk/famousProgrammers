@@ -33,11 +33,14 @@
 <script>
 
 function getTimestampInSeconds () {
-  return Math.floor(Date.now() / 1000)
+return Math.floor(Date.now() / 1000)
 }
 
-try {
-  const token = localStorage.getItem('token')
+const token = localStorage.getItem('token')
+
+function checkIfLoggedIn(token) {
+  login_page.style.display ="block"
+    if(token) {
     var decoded = jwt_decode(token);
     const currentTimeUnix = getTimestampInSeconds()
     const remainingTimeSeconds = decoded.exp - currentTimeUnix
@@ -47,11 +50,11 @@ try {
     document.getElementById("feedback").innerText = "You are already logged in!"
     document.getElementById("goto_admin").innerText = "Go to admin page"
     }
-} catch (error) {
-  console.log(error)
-  login_page.style.display ="block"
-}
-   
+    } 
+  }
+
+  
+
 //get the data from the form
 let form = document.getElementById("login");
 
@@ -86,6 +89,6 @@ form.addEventListener('submit', function(event) {
 
     }
 
-
+checkIfLoggedIn(token)
 </script>
 </html>
