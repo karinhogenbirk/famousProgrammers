@@ -1,15 +1,15 @@
 // database
-// const programmers = require("../../programmers.json");
+const programmers = require("../../programmers.json");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 // to fill the database
-// async function main() {
-//   const programmer = await prisma.programmer.createMany({
-//     data: programmers,
-//   });
-//   console.log(programmer);
-// }
+async function main() {
+  const programmer = await prisma.programmer.createMany({
+    data: programmers,
+  });
+  console.log(programmer);
+}
 
 main()
   .then(async () => {

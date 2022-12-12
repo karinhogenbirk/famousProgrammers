@@ -28,7 +28,6 @@ function createRandomProgrammerQuestion(programmers) {
   const shuffledAnswers = shuffleArray(projects);
 
   return {
-    // name: `Which project is ${randomName} known for?`,
     name: randomName,
     projects: shuffledAnswers,
   };
