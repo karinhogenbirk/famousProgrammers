@@ -52,8 +52,10 @@ async function lastNameCheck(lastName, res) {
 async function fullNameCheck(fullName, res) {
   const programmerName = await prisma.programmer.findMany({
     where: {
-      name: fullName,
-      mode: "insensitive",
+      name: {
+        startsWith: fullName,
+        mode: "insensitive",
+      },
     },
   });
   if (programmerName[0] === undefined) {
@@ -108,6 +110,7 @@ router.get("/me", authenticate, async (req, res) => {
 });
 
 router.post("/find", authenticate, async (req, res) => {
+  console.log(req.body);
   if (!req.body.firstname && !req.body.surname) {
     return res
       .status(400)

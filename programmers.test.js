@@ -128,8 +128,8 @@ async function clearProgrammer(newProgrammer) {
 }
 
 describe("POST /auth/create", () => {
+  const path = "/auth/create";
   test("Should be able to create new programmer", async () => {
-    const path = "/auth/create";
     const newProgrammer = {
       name: "Alfred Hogenbirk",
       project: "Test case",
@@ -148,11 +148,47 @@ describe("POST /auth/create", () => {
 
     await clearProgrammer(newProgrammer);
   });
+
+  test("Should return bad request if programmer already exists", async () => {
+    const newProgrammer = {
+      name: "Evan Williams",
+      project: "Testing project",
+      vote: 0,
+    };
+    const response = await testApp
+      .post(path)
+      .send(newProgrammer)
+      .set("Authorization", `Bearer ${token}`);
+    console.log(response.body);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "This programmer already exists in the database. To update, go to the update page."
+    );
+  });
+
+  test("Returns ZodError if not enough characters", async () => {
+    const newProgrammer = {
+      firstname: " ",
+      surname: "i",
+      project: "Testing project",
+      vote: 0,
+    };
+    const response = await testApp
+      .post(path)
+      .send(newProgrammer)
+      .set("Authorization", `Bearer ${token}`);
+    console.log(response.body);
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "Bad request - must have enough characters"
+    );
+  });
 });
 
 describe("POST /auth/find", () => {
+  const path = "/auth/find";
   test("Should be able to find a new programmer with full name", async () => {
-    const path = "/auth/find";
     const findProgrammer = { firstname: "karin", surname: "hogenbirk" };
 
     const response = await testApp
@@ -162,6 +198,140 @@ describe("POST /auth/find", () => {
     console.log(response.body);
 
     expect(response.status).toBe(200);
-    expect(response.body.message).toBe("Programmer found:");
+    expect(response.body.message).toBe("Programmers found:");
+  });
+
+  test("Should be able to find a new programmer with only firstname", async () => {
+    const findProgrammer = { firstname: "karin" };
+
+    const response = await testApp
+      .post(path)
+      .send(findProgrammer)
+      .set("Authorization", `Bearer ${token}`);
+    console.log(response.body);
+
+    expect(response.status).toBe(200);
+    expect(response.body.message).toBe("Programmers found:");
+  });
+
+  test("Should be able to find a new programmer with only lastname", async () => {
+    const findProgrammer = { surname: "hogenbirk" };
+
+    const response = await testApp
+      .post(path)
+      .send(findProgrammer)
+      .set("Authorization", `Bearer ${token}`);
+    console.log(response.body);
+
+    expect(response.status).toBe(200);
+    expect(response.body.message).toBe("Programmers found:");
+  });
+
+  test("Should return not found if programmer not in database", async () => {
+    const findProgrammer = { surname: "jantje" };
+
+    const response = await testApp
+      .post(path)
+      .send(findProgrammer)
+      .set("Authorization", `Bearer ${token}`);
+    console.log(response.body);
+
+    expect(response.status).toBe(404);
+  });
+});
+
+async function resetProgrammer(programmerName) {
+  const resetProgrammer = await prisma.programmer.updateMany({
+    where: {
+      name: programmerName,
+    },
+    data: {
+      knownFor: "Creating the famous programmers' API",
+    },
+  });
+  console.log(resetProgrammer);
+}
+
+describe("PATCH /auth/update", () => {
+  const path = "/auth/update";
+  test("Should be able to update programmer", async () => {
+    const updateProgrammer = {
+      firstname: "Karin",
+      surname: "Hogenbirk",
+      project: "Testen",
+    };
+    const response = await testApp
+      .patch(path)
+      .send(updateProgrammer)
+      .set("Authorization", `Bearer ${token}`);
+    console.log(response.body);
+
+    expect(response.status).toBe(201);
+
+    await resetProgrammer(
+      updateProgrammer.firstname + " " + updateProgrammer.surname
+    );
+  });
+
+  test("Can't update programmer if project already exists", async () => {
+    const updateProgrammer = {
+      firstname: "John",
+      surname: "Scholes",
+      project: "Direct functions",
+    };
+
+    const response = await testApp
+      .patch(path)
+      .send(updateProgrammer)
+      .set("Authorization", `Bearer ${token}`);
+    console.log(response.body);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "Project already exists in database. No changes made"
+    );
+  });
+});
+
+async function addProgrammer(firstname, surname) {
+  const addProgrammer = await prisma.programmer.create({
+    data: {
+      name: firstname + " " + surname,
+      knownFor: "Lex",
+      vote: 0,
+    },
+  });
+}
+
+describe("DELETE /auth/delete", () => {
+  const path = "/auth/delete";
+  test("Should be able to delete programmer from database", async () => {
+    const deleteProgrammer = {
+      firstname: "Michael",
+      surname: "Lesk",
+    };
+    const response = await testApp
+      .delete(path)
+      .send(deleteProgrammer)
+      .set("Authorization", `Bearer ${token}`);
+    console.log(response.body);
+
+    expect(response.status).toBe(201);
+
+    await addProgrammer(deleteProgrammer.firstname, deleteProgrammer.surname);
+  });
+
+  test("Can't delete if programmer doesn't exist", async () => {
+    const deleteProgrammer = {
+      firstname: "Hola",
+      surname: "Hola",
+    };
+    const response = await testApp
+      .delete(path)
+      .send(deleteProgrammer)
+      .set("Authorization", `Bearer ${token}`);
+    console.log(response.body);
+
+    expect(response.status).toBe(404);
   });
 });
