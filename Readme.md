@@ -20,9 +20,10 @@ The tools I have learned to build this project include:
 * JWT authorization
 * Middleware
 * Routers
-* Automated testing with supertest
-* Github actions
-* Cypress
+* Automated backend testing with supertest
+* Automated frontend testing with Cypress
+* GitHub actions
+
 
 ## How it works
 
@@ -31,6 +32,7 @@ The tools I have learned to build this project include:
 - The utilities to create random questions are written in 'utils'
 - The code in programmers.js gets the random questions, checks the answers and counts the votes to make a list of high scores
 - The scores are connected to a prisma database
+- For development and testing there are two seperate databases, to be found in env.test and env.development
 
 ## Installing
 
@@ -39,4 +41,4 @@ The tools I have learned to build this project include:
 3. run `npm run dev` to start the server in development mode (with nodemon)
 4. run `npm run prisma:seed` to create a prisma client database 
 5. run `npx prisma studio` to access the database - you can check the votecount of the programmers here
-
+6. run `npm run test` to run the backend tests
