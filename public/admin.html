@@ -5,6 +5,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700&family=Lexend+Deca&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,100 +23,114 @@
 
   <div class="admin_page" id="admin_page">
     <p>Hi! Congrats, you have access to the programmers database. 
-       You can update, delete or create a new programmer. 
-       <div class="CRUD_buttons">
-      <button onclick="showFindForm()">Find</button>
-       <button onclick="showUpdateForm()">Update</button>
-       <button onclick="showDeleteForm()">Delete</button>
-       <button onclick="showCreateForm()">Create</button>
-      </div>
+       You can find, update, delete or create a new programmer. 
     </p>
   </div>
-  <div class="delete_programmer" id="delete_programmer">
-    <h2>Delete a programmer from the database</h2>
-  <form method="delete" id="delete">
-  <label for="name"> Programmer's first name:</label> <br>
-      <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="nameDelete" name="nameDelete" > <br>
-      <label for="surname"> Programmer's surname:</label> <br>
-      <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="surnameDelete" name="surnameDelete"> <br><br>
-      <button type="submit" class="start_button" >Delete programmer</button>
-    </form>
-    <h3 id="deleted_message"></h3>
-    <h4 id="deleted_info"></h4> 
-  </div>
+  
 
-  <div class="create_programmer" id="create_programmer">
-    <h2>Create a new programmer</h2>
+<div class="find_programmer" id="find_programmer">
+<h3>Search by name</h3>
+<form method="post" id="find">
+  <table >
+    <tr>
+<td>
+    <input type = "text" pattern="[A-z]{1,}" title="Must contain at least 1 character, no number" id="nameFind" name="name" placeholder="First name" style="height:20px; border-radius:0px;"></td>
+    <td>
+    <input type = "text" pattern="[A-z]{1,}" title="Must contain at least 1 character, no number" id="surnameFind" name="surname" placeholder="Last name" style="height:20px;border-radius:0px;"></td>
+    <td><button type="submit" style="height:20px; border-radius: 0px; margin:0px;">Search</button>   </form></td>
+    <td><button style="height:20px; border-radius: 0px; margin:0px;" onclick="showCreateForm()">Create new</button></td>
+  </tr>
+  </table> <br>
+  <div>    <h3 id="programmer_message"></h3></div>
+ <table id="results">
+  <template>
+ 
+      <tr>
+        <td class='pr-td' id="firstname">Programmer firstname</td><td class='pr-td' id="lastname">Programmer lastname</td> <td  class='pr-td' id="knownfor">Known for</td>
+        <td id="edit" class='pr-td'><a href="#"><img src='/images/user-pen-solid.png' style='height:20px; padding:3px;' alt='edit' class='edit_icon'></a></td>
+        <td id="delete" class='pr-td'><a href="#"><img src='/images/trash-can-solid.png'style='height:20px; padding:3px;' alt='delete' class='delete_icon'></a></td>
+      </tr>
+
+  </template>
+</table>
+</div>
+  <div class="deleteModal" id="deleteModal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+    <h2>Are you sure you want to delete this programmer?</h2>
+    <h3 id="nameDelete"></h3>
+      <button type="submit" class="start_button" id="yes">Yes</button> <button type="submit" class="start_button" id="no">No</button>
+    <h3 id="deleted_message"></h3>
+  </div></div>
+
+  <div class="createModal" id="createModal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
   <form action="./form.js" method="post" id="create">
     <label for="name"> Programmer's first name:</label> <br>
-    <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="name" name="name" required > <br>
+    <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="nameCreate" name="nameCreate" required > <br>
     <label for="surname"> Programmer's surname:</label> <br>
-    <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="surname" name="surname" required > <br>
-    <label for="project"> Project(s):</label> <br>
-   <input type = "text"  pattern="[A-z\s\-]{5,100}" title="Must a be string, at least 5 characters" id="project" name="project" class="input_project" required> <br><br>
-    <button type="submit" class="start_button" >Add programmer</button>
+    <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="surnameCreate" name="surnameCreate" required > <br>
+    <label for="project"> Known for:</label> <br>
+   <input type = "text"  pattern="[A-z\s\-]{5,100}" title="Must a be string, at least 5 characters" id="projectCreate" name="projectCreate" class="input_project" required> <br><br>
+   <table><tr>
+    <button type="submit" class="start_button" style="height:100%; margin-right:2px;">Create</button><button input type="reset" style="height:100%;" class="start_button">Cancel</button>
+  </tr>
+  </table>
   </form>
   <h3 id="return_message"></h3><br />
 <a href="#" onclick="showUpdateForm()" id="programmer_exists"></a><br />
 </div>
-<div class="update_programmer" id="update_programmer">
-<h2>Update a programmer</h2>
-<h3>Which programmer would you like to update?</h3>
+</div>
+<div class="modal" id="updateModal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
 <form method="post" id="update">
 <label for="name"> Programmer's first name:</label> <br>
     <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="nameUpdate" name="name" required > <br>
     <label for="name"> Programmer's surname:</label> <br>
-    <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="surnameUpdate" name="surname" required > <br><br />
-    <h3> Which projects is this programmer known for?</h3>
-    <input type = "text" pattern="[A-z\s\-]{5,100}" title="Must a be string, at least 5 characters" id="projectUpdate" name="project" required > <br><br>
-    <button type="submit" class="start_button" >Update programmer</button>
-  </form>
+    <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="surnameUpdate" name="surname" required > <br>
+    <label for="knownfor"> Known for:</label> <br>
+    <input type = "text" pattern="[a-zA-Z0-9\s\.,-]{5,100}" title="Must a be string, at least 5 characters" id="projectUpdate" name="project" required > <br><br>
+    <table>
+      <tr>
+    <button type="submit" class="start_button" style="height:100%; margin-right:2px;" >Update</button> <button input type="reset" style="height:100%;" class="start_button">Cancel</button>
+  </tr>
+  </table>
+</form>
   <h3 id="programmer_updated"></h3>
   <h4 id="updated_info"></h4>
 </div>
-<div class="find_programmer" id="find_programmer">
-  <h2>Find a programmer</h2>
-<h3>Search by name</h3>
-<form method="post" id="find">
-<label for="name"> Programmer's first name:</label> <br>
-    <input type = "text" pattern="[A-z]{1,}" title="Must contain at least 1 character, no number" id="nameFind" name="name" > <br>
-    <label for="surname"> Programmer's surname:</label> <br>
-    <input type = "text" pattern="[A-z]{1,}" title="Must contain at least 1 character, no number" id="surnameFind" name="surname"> <br><br>
-    <button type="submit" class="start_button" >Find</button>
-  </form>
-  <h3 id="programmer_message"></h3>
-  <h4 id="programmer_info"></h4> 
 </div>
+
 <footer>
   <a href="./index.html">Back to homepage</a>
 </footer>
 </div>
 </body>
 <script>
-  function showCreateForm() {
-  admin_page.style.display="none";
-  create_programmer.style.display = "block";
-}
 
-function showDeleteForm() {
-  admin_page.style.display="none";
-  delete_programmer.style.display = "block";
-} 
 
-function showUpdateForm() {
-  create_programmer.style.display="none";
-  admin_page.style.display="none";
-  update_programmer.style.display = "block";
-}
+// function showDeleteForm() {
+//   admin_page.style.display="none";
+//   delete_programmer.style.display = "block";
+// } 
 
-function showFindForm() {
-  admin_page.style.display="none";
-  find_programmer.style.display = "block";
-}
+// function showUpdateForm() {
+//   create_programmer.style.display="none";
+//   admin_page.style.display="none";
+//   update_programmer.style.display = "block";
+// }
+
+// function showFindForm() {
+//   admin_page.style.display="none";
+//   find_programmer.style.display = "block";
+// }
 
 function getTimestampInSeconds () {
   return Math.floor(Date.now() / 1000)
 }
+
 
 function logOut(message) {
   localStorage.clear('token');
@@ -123,7 +138,6 @@ function logOut(message) {
   document.getElementById("login").innerText = "Login to your account";
   admin_page.style.display="none";
   find_programmer.style.display="none";
-  update_programmer.style.display="none";
   create_programmer.style.display="none";
   delete_programmer.style.display="none";
 }
@@ -165,20 +179,6 @@ async function checkAuthorization(token) {
       }
     }
 
-  let formCreate = document.getElementById("create");
-
-  formCreate.addEventListener('submit', function(event) {
-  event.preventDefault()
-
-  var firstname = document.getElementById('name').value
-  var surname = document.getElementById('surname').value
-  var name = firstname + " " + surname;
-  var project = document.getElementById('project').value
-
-  console.log(name, project)
-
-  createProgrammer(name, project)
-})
 
 let formFind = document.getElementById("find");
 
@@ -205,59 +205,98 @@ formUpdate.addEventListener('submit', function(event){
 
 })
 
-let formDelete = document.getElementById("delete");
+// let formDelete = document.getElementById("delete");
 
-formDelete.addEventListener('submit', function(event) {
-  event.preventDefault()
+// formDelete.addEventListener('submit', function(event) {
+//   event.preventDefault()
 
-  var firstname = document.getElementById("nameDelete").value;
-  var surname = document.getElementById("surnameDelete").value;
+//   var firstname = document.getElementById("nameDelete").value;
+//   var surname = document.getElementById("surnameDelete").value;
 
-  console.log(firstname, surname)
+//   console.log(firstname, surname)
 
-  deleteProgrammer(firstname, surname)
+//   deleteProgrammer(firstname, surname)
   
-})
+// })
 
-async function deleteProgrammer(firstname, surname) {
-  const response = await fetch("./auth/delete", {
-    method: "DELETE", 
-    body: JSON.stringify({ firstname: firstname, surname: surname }),
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-  const data = await response.json();
 
-  document.getElementById("deleted_message").innerText = data.message;
 
-  if(response.status===201) {
-    document.getElementById("deleted_info").innerText = data.programmer;
+var modal = document.getElementById("updateModal");
+var createModal = document.getElementById("createModal")
+var deleteModal = document.getElementById("deleteModal")
+
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  } else if (event.target == createModal) {
+    createModal.style.display = "none";
+  } else if (event.target == deleteModal) {
+    deleteModal.style.display="none";
   }
 }
 
-async function findProgrammer(firstname, surname) {
-  const response = await fetch("./auth/find", {
-    method: "POST", 
-    body: JSON.stringify({ firstname: firstname, surname: surname }),
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-  const data = await response.json();
-  const programmerList = data.programmer
+function openModal(firstname, lastname, knownfor) {
+modal.style.display="block";
+var span = document.getElementsByClassName("close")[0];
+span.onclick = function() {
+modal.style.display = "none";
+}
+var firstNameField = document.getElementById("nameUpdate")
+var lastNameField = document.getElementById("surnameUpdate")
+var knownForField = document.getElementById("projectUpdate")
+firstNameField.value = firstname;
+lastNameField.value = lastname;
+knownForField.value = knownfor;
+}
 
-  document.getElementById("programmer_message").innerText = data.message
+function openDeleteModal(firstname, lastname) {
+deleteModal.style.display="block";
+var span = document.getElementsByClassName("close")[0];
+span.onclick = function() {
+deleteModal.style.display = "none";
+}
+document.getElementById("nameDelete").innerText = firstname + " " + lastname;
 
-  console.log(programmerList.length)
-  for (let index = 0; index < programmerList.length; index++) {
-    const programmer = programmerList[index];
-    console.log(programmer.name)
-    document.getElementById("programmer_info").innerText += programmer.name + ": " + programmer.knownFor + "\n\n ";
-  }
-  }
+document.querySelector('#yes').onclick = () => deleteProgrammer(firstname, lastname)
+document.querySelector('#no').onclick = () => function() {
+deleteModal.style.display = "none";
+}
+}
+
+function showCreateForm() {
+var firstName = document.getElementById("nameFind").value
+var lastName = document.getElementById("surnameFind").value
+console.log(firstName, lastName)
+openModalCreate(firstName, lastName)
+}
+
+function openModalCreate(firstname, lastname) {
+createModal.style.display="block";
+var span = document.getElementsByClassName("close")[0];
+span.onclick = function() {
+createModal.style.display = "none";
+}
+var firstNameField = document.getElementById("nameCreate")
+var lastNameField = document.getElementById("surnameCreate")
+firstNameField.value = firstname;
+lastNameField.value = lastname;
+}
+
+let formCreate = document.getElementById("create");
+
+formCreate.addEventListener('submit', function(event) {
+event.preventDefault()
+
+var firstname = document.getElementById('nameCreate').value
+var surname = document.getElementById('surnameCreate').value
+var name = firstname + " " + surname;
+var project = document.getElementById('projectCreate').value
+
+console.log(name, project)
+
+createProgrammer(name, project)
+})
+
 
 
 async function createProgrammer(name, project) {
@@ -278,6 +317,57 @@ async function createProgrammer(name, project) {
     document.getElementById("programmer_exists").innerText = "Update page"
   } 
 }
+
+async function deleteProgrammer(firstname, surname) {
+  const response = await fetch("./auth/delete", {
+    method: "DELETE", 
+    body: JSON.stringify({ firstname: firstname, surname: surname }),
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  const data = await response.json();
+
+  document.getElementById("deleted_message").innerText = data.message;
+
+  // if(response.status===201) {
+  //   document.getElementById("deleted_info").innerText = data.programmer;
+  // }
+}
+
+async function findProgrammer(firstname, surname) {
+  const response = await fetch("./auth/find", {
+    method: "POST", 
+    body: JSON.stringify({ firstname: firstname, surname: surname }),
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  const data = await response.json();
+  const programmerList = data.programmer
+
+  document.getElementById("programmer_message").innerText = data.message
+
+
+  for (let index = 0; index < programmerList.length; index++) {
+    const programmer = programmerList[index];
+    const programmerFirstname = programmer.name.split(" ")[0];
+    const programmerLastname = programmer.name.split(" ")[1];
+    const programmerKnownfor = programmer.knownFor;
+    const template = document.querySelector("template")
+    const content = template.content.cloneNode(true)
+    content.querySelector('#firstname').innerText = programmerFirstname;
+    content.querySelector('#lastname').innerText = programmerLastname;
+    content.querySelector('#knownfor').innerText = programmerKnownfor
+    content.querySelector('#edit').onclick = ()=> openModal(programmerFirstname, programmerLastname, programmerKnownfor)
+    content.querySelector('#delete').onclick = ()=> openDeleteModal(programmerFirstname, programmerLastname)
+    document.querySelector("#results").append(content)
+  }
+
+  }
+
 
 async function updateProgrammer(firstname, surname, project) {
   const response = await fetch("./auth/update", {

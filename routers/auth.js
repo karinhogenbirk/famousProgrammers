@@ -248,9 +248,7 @@ router.delete("/delete", authenticate, async (req, res) => {
     if (programmerToDelete.count === 0) {
       programmerNotFound(fullName, res);
     } else {
-      return res
-        .status(201)
-        .json({ message: "Programmer deleted: ", programmer: fullName });
+      return res.status(201).json({ message: "Programmer deleted! " });
     }
   } catch (error) {
     console.log(error);

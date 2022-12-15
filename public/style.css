@@ -19,6 +19,66 @@ body {
     display: flex;
 }
 
+.find_results {
+    border: 1px solid black;
+    font-size: 12px;
+}
+
+.pr-td {
+    border: 1px solid black;
+}
+
+
+.createModal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.deleteModal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
 .card {
     width: 375px;
     min-height: 1000px;
@@ -134,13 +194,13 @@ button:hover {
     margin-bottom: 35px;
 }
 
-.CRUD_buttons {
+/* .CRUD_buttons {
     display: flex;
     flex-direction: column;
     width: 150px;
     height: 80px;
     font-size: 24px;
-}
+} */
 
 .start_button {
     width: 150px;
@@ -148,21 +208,39 @@ button:hover {
     font-size: 16px;
 }
 
-.admin_page {
+/* .admin_page {
     display: none;
-}
+} */
 
 .create_programmer {
     display: none;
 }
 
-.update_programmer {
-    display: none;
+/* .createModal {
+    display:none;
+
+} */
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
 }
 
-.find_programmer {
-    display:none;
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }
+/* .update_programmer {
+    display: none;
+} */
+
+/* .find_programmer {
+    display:none;
+} */
 
 .delete_programmer {
     display:none;
