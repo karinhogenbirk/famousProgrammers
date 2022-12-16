@@ -19,9 +19,20 @@ body {
     display: flex;
 }
 
+
 .find_results {
     border: 1px solid black;
     font-size: 12px;
+}
+
+.find_programmer { 
+    overflow-x: scroll;
+    min-height: 800px;
+}
+
+.searchfield {
+    display: flex;
+    flex-direction: row;
 }
 
 .pr-td {
@@ -194,14 +205,6 @@ button:hover {
     margin-bottom: 35px;
 }
 
-/* .CRUD_buttons {
-    display: flex;
-    flex-direction: column;
-    width: 150px;
-    height: 80px;
-    font-size: 24px;
-} */
-
 .start_button {
     width: 150px;
     height: 50px;
@@ -234,13 +237,7 @@ button:hover {
   text-decoration: none;
   cursor: pointer;
 }
-/* .update_programmer {
-    display: none;
-} */
 
-/* .find_programmer {
-    display:none;
-} */
 
 .delete_programmer {
     display:none;
@@ -321,9 +318,14 @@ progress {
             height: 100%;
             border-radius: 0px;
             border: 4px solid #26C2AE;
+
         }
         body {
             margin: 0px;
+            /* display:block; */
+        }
+        .searchfield {
+            flex-direction: wrap;
         }
     }
 
