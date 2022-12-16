@@ -19,15 +19,13 @@ body {
     display: flex;
 }
 
+/* .search {
+    overflow-x: scroll;
+} */
 
 .find_results {
     border: 1px solid black;
     font-size: 12px;
-}
-
-.find_programmer { 
-    overflow-x: scroll;
-    min-height: 800px;
 }
 
 .searchfield {
@@ -100,6 +98,8 @@ body {
     padding: 32px;
     justify-content: center;
     box-shadow: 5px 10px 20px #26C2AE;
+    overflow-x: scroll;
+    position: relative;
 }
 
 h1 {
@@ -176,8 +176,6 @@ ol {
     display: inline-block;
   }
 
-
-
 button {
     background-color: #26C2AE;
     color:  #00474B;
@@ -211,17 +209,8 @@ button:hover {
     font-size: 16px;
 }
 
-/* .admin_page {
+/* .create_programmer {
     display: none;
-} */
-
-.create_programmer {
-    display: none;
-}
-
-/* .createModal {
-    display:none;
-
 } */
 
 .close {
@@ -239,9 +228,9 @@ button:hover {
 }
 
 
-.delete_programmer {
+/* .delete_programmer {
     display:none;
-}
+} */
 
 .login_page {
     display: none;
