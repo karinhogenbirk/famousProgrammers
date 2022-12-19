@@ -33,11 +33,14 @@
     "prisma:migrate:deploy": "npx prisma migrate deploy",
     "build": "npm run prisma:migrate:deploy",
     "cypress:open": "cypress open",
-    "test:cypress": "npx cypress run"
+    "test:cypress": "npx cypress run",
+    "start-server": "npm start",
+    "ci": "start-server-and-test start-server http://localhost:4000 test:cypress"
   },
   "author": "karin hogenbirk",
   "license": "ISC",
   "devDependencies": {
-    "prisma": "^4.7.1"
+    "prisma": "^4.7.1",
+    "start-server-and-test": "^1.15.2"
   }
 }
