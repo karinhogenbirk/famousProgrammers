@@ -32,7 +32,8 @@
     "prisma:seed": "node ./prisma/seeders/programmers.js",
     "prisma:migrate:deploy": "npx prisma migrate deploy",
     "build": "npm run prisma:migrate:deploy",
-    "cypress:open": "cypress open"
+    "cypress:open": "cypress open",
+    "test:cypress": "npx cypress run"
   },
   "author": "karin hogenbirk",
   "license": "ISC",
