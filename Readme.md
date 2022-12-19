@@ -1,8 +1,12 @@
 # Famous programmers
 
-The programmers´ quiz is developed to determine which programmers are easily recognized and therefore can be seen as most ´famous´. 
+The programmers' quiz is developed to determine which programmers are easily recognized and therefore can be seen as most ´famous´. 
 The quiz takes random programmers and projects from a list of 345 programmers. It generates 10 random questions and saves answers in a database. 
-The calculated votes give us a top 5 of most famous programmers. Besides this, it´s a fun game to play! 
+The calculated votes give us a top 5 of most famous programmers. Besides this, it's a fun game to play! 
+
+The app also contains an admin page. The admin page is for authorized users who can, after logging into their account, access the database. 
+It is very likely that data about famous programmers changes: new programmers will join the table or known programmers work on new projects. 
+On the admin page it is therefore possible to delete, update and create programmers in the database. 
 
 ## What I have learned
 
@@ -12,7 +16,7 @@ The tools I have learned to build this project include:
 * CSS basics and responsive design
 * Data scraping using JSDOM
 * Express
-* Prisma 
+* Prisma database
 * Postman 
 * Debugging
 * bcrypt
@@ -23,7 +27,6 @@ The tools I have learned to build this project include:
 * Automated backend testing with supertest
 * Automated frontend testing with Cypress
 * GitHub actions
-
 
 ## How it works
 
@@ -37,8 +40,9 @@ The tools I have learned to build this project include:
 ## Installing
 
 1. clone the repo
-2. run `npm install`
+2. run `npm install` to install the package
 3. run `npm run dev` to start the server in development mode (with nodemon)
 4. run `npm run prisma:seed` to create a prisma client database 
-5. run `npx prisma studio` to access the database - you can check the votecount of the programmers here
+5. run `npx prisma studio` to access the database - you can check the votecount of the programmers here (this is de dev database!)
 6. run `npm run test` to run the backend tests
+7. run `npm run test:cypress` to run the frontend tests
