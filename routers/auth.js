@@ -131,10 +131,21 @@ router.post("/find", authenticate, async (req, res) => {
   }
 });
 
+function escape(htmlStr) {
+  return htmlStr
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 router.post("/create", authenticate, async (req, res) => {
   try {
     const parsedProgrammer = ValidProgrammer.parse(req.body.name);
     const parsedProject = ValidProject.parse(req.body.project);
+    const nameEscaped = escape(req.body.name);
+    const projectEscaped = escape(req.body.project);
+    console.log(nameEscaped, projectEscaped);
     const programmerExists = await exists(
       {
         where: {
@@ -153,23 +164,29 @@ router.post("/create", authenticate, async (req, res) => {
 
     const newProgrammer = await prisma.programmer.create({
       data: {
-        name: req.body.name,
-        knownFor: req.body.project,
+        name: nameEscaped,
+        knownFor: projectEscaped,
         vote: 0,
       },
     });
 
     return res.status(201).json({
       message: "Programmer added! Thank you for the update.",
-      programmer: req.body.name,
-      project: req.body.project,
+      programmer: nameEscaped,
+      project: projectEscaped,
     });
   } catch (error) {
-    console.log(error.issues, error.name);
+    console.log(error.name, error.issues);
     if (error.name === "ZodError") {
       return res.status(400).json({
         message: "Bad request - must have enough characters",
         errors: error.issues,
+      });
+    }
+    if (error.name === "SyntaxError") {
+      return res.status(400).json({
+        message: "Bad request - syntax error",
+        error: error.issues,
       });
     }
     return res.status(500).json({

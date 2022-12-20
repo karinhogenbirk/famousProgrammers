@@ -184,6 +184,23 @@ describe("POST /auth/create", () => {
       "Bad request - must have enough characters"
     );
   });
+
+  test("Should escape html", async () => {
+    const newProgrammer = {
+      name: "<h1>Karin</h1>",
+      project: "<button>Click me</button>",
+      vote: 0,
+    };
+    const response = await testApp
+      .post(path)
+      .send(newProgrammer)
+      .set("Authorization", `Bearer ${token}`);
+    console.log(response.body);
+
+    expect(response.body.programmer).toBe("&lt;h1&gt;Karin&lt;/h1&gt;");
+
+    await clearProgrammer(newProgrammer);
+  });
 });
 
 describe("POST /auth/find", () => {
