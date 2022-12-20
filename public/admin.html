@@ -76,7 +76,7 @@
     <label for="name"> Programmer's first name:</label> <br>
     <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="nameCreate" name="nameCreate" required > <br>
     <label for="surname"> Programmer's surname:</label> <br>
-    <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="surnameCreate" name="surnameCreate" required > <br>
+    <input type = "text" pattern="[A-Z]{1}[A-z\-\s']{1, 40}" title="Must be a string, first letter uppercase" id="surnameCreate" name="surnameCreate" required > <br>
     <label for="project"> Known for:</label> <br>
    <input type = "text"  pattern="[A-z\s\-]{5,100}" title="Must a be string, at least 5 characters" id="projectCreate" name="projectCreate" class="input_project" required> <br><br>
    <table><tr>
@@ -95,7 +95,7 @@
 <label for="name"> Programmer's first name:</label> <br>
     <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="nameUpdate" name="name" required > <br>
     <label for="name"> Programmer's surname:</label> <br>
-    <input type = "text" pattern="[A-Z][a-z\-\s]{1,30}" title="Must be a string, first letter uppercase" id="surnameUpdate" name="surname" required > <br>
+    <input type = "text" pattern="[A-Z]{1}[A-z\-\s']{1, 40}" title="Must be a string, first letter uppercase" id="surnameUpdate" name="surname" required > <br>
     <label for="knownfor"> Known for:</label> <br>
     <input type = "text" pattern="[a-zA-Z0-9\s\.,-]{5,100}" title="Must a be string, at least 5 characters" id="projectUpdate" name="project" required > <br><br>
     <table>
@@ -114,6 +114,10 @@
 </footer>
 </div>
 </body>
+<script src="./crud/create.js"></script>
+<script src="./crud/delete.js"></script>
+<script src="./crud/find.js"></script>
+<script src="./crud/update.js"></script>
 <script>
 
 function getTimestampInSeconds () {
@@ -166,37 +170,11 @@ async function checkAuthorization(token) {
       }
     }
 
-
-let formFind = document.getElementById("find");
-
-formFind.addEventListener('submit', function(event) {
-  event.preventDefault()
-
-  var firstname = document.getElementById("nameFind").value
-  var surname = document.getElementById('surnameFind').value
-
-  findProgrammer(firstname, surname)
-
-})
-
-let formUpdate = document.getElementById("update");
-
-formUpdate.addEventListener('submit', function(event){
-  event.preventDefault()
-
-  var firstname = document.getElementById("nameUpdate").value;
-  var surname = document.getElementById("surnameUpdate").value;
-  var project = document.getElementById("projectUpdate").value;
-
-  updateProgrammer(firstname, surname, project)
-
-})
-
-//make modal disappear by clicking on window:
 var modal = document.getElementById("updateModal");
 var createModal = document.getElementById("createModal")
 var deleteModal = document.getElementById("deleteModal")
 
+    //make modal disappear by clicking on window:
 window.onclick = function(event) {
   if (event.target == modal) {
     modal.style.display = "none";
@@ -207,157 +185,8 @@ window.onclick = function(event) {
   }
 }
 
-function openModal(firstname, lastname, knownfor) {
-modal.style.display="block";
-var span = document.getElementsByClassName("close")[2];
-span.onclick = function() {
-modal.style.display = "none";
-}
-var firstNameField = document.getElementById("nameUpdate")
-var lastNameField = document.getElementById("surnameUpdate")
-var knownForField = document.getElementById("projectUpdate")
-firstNameField.value = firstname;
-lastNameField.value = lastname;
-knownForField.value = knownfor;
-}
-
-function openDeleteModal(firstname, lastname) {
-deleteModal.style.display="block";
-var span = document.getElementsByClassName("close")[0];
-span.onclick = function() {
-deleteModal.style.display = "none";
-}
-document.getElementById("nameDelete").innerText = firstname + " " + lastname;
-
-document.querySelector('#yes').onclick = () => deleteProgrammer(firstname, lastname)
-document.querySelector('#no').onclick = () => function() {
-deleteModal.style.display = "none";
-}
-}
-
-function showCreateForm() {
-var firstName = document.getElementById("nameFind").value
-var lastName = document.getElementById("surnameFind").value
-console.log(firstName, lastName)
-openModalCreate(firstName, lastName)
-}
-
-function openModalCreate(firstname, lastname) {
-createModal.style.display="block";
-var span = document.getElementsByClassName("close")[1];
-span.onclick = function() {
-createModal.style.display = "none";
-}
-var firstNameField = document.getElementById("nameCreate")
-var lastNameField = document.getElementById("surnameCreate")
-firstNameField.value = firstname;
-lastNameField.value = lastname;
-}
-
-let formCreate = document.getElementById("create");
-
-formCreate.addEventListener('submit', function(event) {
-event.preventDefault()
-
-var firstname = document.getElementById('nameCreate').value
-var surname = document.getElementById('surnameCreate').value
-var name = firstname + " " + surname;
-var project = document.getElementById('projectCreate').value
-
-console.log(name, project)
-
-createProgrammer(name, project)
-})
 
 
-
-async function createProgrammer(name, project) {
-  const response = await fetch("./auth/create", {
-    method: "POST", 
-    body: JSON.stringify({ name: name, project: project }),
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-  const data = await response.json();
-  console.log(data)
-
-  document.getElementById("return_message").innerText = data.message;
-
-  if(response.status===400) {
-    document.getElementById("programmer_exists").innerText = "Update page"
-  } 
-}
-
-async function deleteProgrammer(firstname, surname) {
-  const response = await fetch("./auth/delete", {
-    method: "DELETE", 
-    body: JSON.stringify({ firstname: firstname, surname: surname }),
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-  const data = await response.json();
-
-  document.getElementById("deleted_message").innerText = data.message;
-}
-
-async function findProgrammer(firstname, surname) {
-  const results = document.getElementById("results");
-  results.replaceChildren();
-  const response = await fetch("./auth/find", {
-    method: "POST", 
-    body: JSON.stringify({ firstname: firstname, surname: surname }),
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-  const data = await response.json();
-  const programmerList = data.programmer
-
-  document.getElementById("programmer_message").innerText = data.message
-  document.getElementById("nameFind").value = "";
-  document.getElementById("surnameFind").value = "";
-
-  for (let index = 0; index < programmerList.length; index++) {
-    const programmer = programmerList[index];
-    const programmerFirstname = programmer.name.split(" ")[0];
-    const programmerLastname = programmer.name.split(" ")[1];
-    const programmerKnownfor = programmer.knownFor;
-    const template = document.querySelector("template")
-    const content = template.content.cloneNode(true)
-    content.querySelector('#firstname').innerText = programmerFirstname;
-    content.querySelector('#lastname').innerText = programmerLastname;
-    content.querySelector('#knownfor').innerText = programmerKnownfor
-    content.querySelector('#edit').onclick = ()=> openModal(programmerFirstname, programmerLastname, programmerKnownfor)
-    content.querySelector('#delete').onclick = ()=> openDeleteModal(programmerFirstname, programmerLastname)
-    document.querySelector("#results").append(content)
-  }
-
-  }
-
-
-async function updateProgrammer(firstname, surname, project) {
-  const response = await fetch("./auth/update", {
-    method: "PATCH", 
-    body: JSON.stringify({ firstname: firstname, surname: surname, project: project }),
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-  const data = await response.json();
-
-  document.getElementById("programmer_updated").innerText = data.message;
-
-  if(response.status===201) {
-    document.getElementById("updated_info").innerText = data.programmer;
-  }
-}
-    
     checkAuthorization(token)
 </script>
 </html>
