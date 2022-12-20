@@ -28,9 +28,14 @@ body {
     font-size: 12px;
 }
 
-.searchfield {
+/* .searchfield {
     display: flex;
     flex-direction: row;
+} */
+
+tr {
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .pr-td {
@@ -313,8 +318,8 @@ progress {
             margin: 0px;
             /* display:block; */
         }
-        .searchfield {
-            flex-direction: wrap;
+        tr {
+            flex-wrap: wrap;
         }
     }
 
