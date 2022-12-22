@@ -1,3 +1,4 @@
+const prisma = require("../client");
 const { cleardb } = require("./cypress-utils");
 
 cleardb()
