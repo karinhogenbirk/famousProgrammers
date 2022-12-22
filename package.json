@@ -31,6 +31,7 @@
     "scrape": "node scraper.js",
     "prisma:seed": "node ./prisma/seeders/programmers.js",
     "prisma:migrate:deploy": "npx prisma migrate deploy",
+    "prisma:studio:dev": "dotenv -e .env.development -- npx prisma studio",
     "build": "npm run prisma:migrate:deploy",
     "cypress:open": "dotenv -e .env.development -- cypress open",
     "test:cypress": "npx cypress run",
