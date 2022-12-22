@@ -32,7 +32,7 @@
     "prisma:seed": "node ./prisma/seeders/programmers.js",
     "prisma:migrate:deploy": "npx prisma migrate deploy",
     "build": "npm run prisma:migrate:deploy",
-    "cypress:open": "cypress open",
+    "cypress:open": "dotenv -e .env.development -- cypress open",
     "test:cypress": "npx cypress run",
     "start-server": "npm start",
     "ci": "start-server-and-test start-server http://localhost:4000 test:cypress"

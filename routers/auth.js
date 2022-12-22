@@ -183,12 +183,6 @@ router.post("/create", authenticate, async (req, res) => {
         errors: error.issues,
       });
     }
-    if (error.name === "SyntaxError") {
-      return res.status(400).json({
-        message: "Bad request - syntax error",
-        error: error.issues,
-      });
-    }
     return res.status(500).json({
       message: "Oops, something went wrong!",
     });

@@ -1,6 +1,6 @@
-let formFind = document.getElementById("find");
+let searchButton = document.getElementById("searchbutton");
 
-formFind.addEventListener("submit", function (event) {
+searchButton.addEventListener("click", function (event) {
   event.preventDefault();
   findProgrammer();
 });

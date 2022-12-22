@@ -1,14 +1,6 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const { cleardb } = require("./cypress-utils");
 
-async function main() {
-  const programmer = await prisma.programmer.deleteMany({
-    where: {},
-  });
-  console.log(programmer);
-}
-
-main()
+cleardb()
   .then(async () => {
     await prisma.$disconnect();
   })

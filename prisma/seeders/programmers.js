@@ -1,17 +1,6 @@
-// database
-const programmers = require("../../programmers.json");
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const { seeddb } = require("./cypress-utils");
 
-// to fill the database
-async function main() {
-  const programmer = await prisma.programmer.createMany({
-    data: programmers,
-  });
-  console.log(programmer);
-}
-
-main()
+seeddb()
   .then(async () => {
     await prisma.$disconnect();
   })

@@ -10,7 +10,17 @@
 //
 //
 // -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
+Cypress.Commands.add("login", (email, password) => {
+  cy.visit("http://localhost:4000/admin.html");
+  cy.contains("Admin page");
+  cy.contains("Login to your account").click();
+  cy.url().should("include", "login.html");
+  cy.get("[name=email]").type(email);
+  cy.get("[name=password").type(password);
+  cy.get("form").contains("Log in").click();
+  cy.url().should("include", "admin.html");
+});
+
 //
 //
 // -- This is a child command --
