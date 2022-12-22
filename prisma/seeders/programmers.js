@@ -1,3 +1,4 @@
+const prisma = require("../client");
 const { seeddb } = require("./cypress-utils");
 
 seeddb()
