@@ -1,4 +1,10 @@
 describe("Admin test", () => {
+  beforeEach(() => {
+    cy.task("db:seed");
+  });
+  afterEach(() => {
+    cy.task("db:teardown");
+  });
   it("show list of programmers with correct search", () => {
     cy.login("karinhogenbirk93@gmail.com", "testtest");
     cy.get("[name=nameFind]").type("Karin");
@@ -9,6 +15,12 @@ describe("Admin test", () => {
 });
 
 describe("Admin test", () => {
+  beforeEach(() => {
+    cy.task("db:seed");
+  });
+  afterEach(() => {
+    cy.task("db:teardown");
+  });
   it("can create new programmer by clicking create button", () => {
     cy.get("table").contains("Create").click();
     cy.get("[name=createModal]");
@@ -30,9 +42,11 @@ describe("Admin test", () => {
 
 //with database teardown:
 describe("Admin test with database teardown", () => {
+  beforeEach(() => {
+    cy.task("db:seed");
+  });
   afterEach(() => {
     cy.task("db:teardown");
-    cy.task("db:seed");
   });
 
   it("can create new programmer by clicking create button", () => {
