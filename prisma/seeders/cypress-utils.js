@@ -10,8 +10,9 @@ async function seeddb() {
   });
 
   const newUser = await prisma.user.upsert({
-    data: {
+    create: {
       password: "$2b$10$qm3mb3KenoJFIwY55XqcTOUl8xlXZDA0OcIPwVM8uC.Tk72ICcwmO",
+      email: "karinhogenbirk93@gmail.com",
     },
     where: {
       email: "karinhogenbirk93@gmail.com",
