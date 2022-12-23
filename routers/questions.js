@@ -123,9 +123,17 @@ router.get("/results", async (req, res) => {
     },
   });
 
-  let sortedHighscores = highScores.slice(0, 5);
-
-  return res.json(sortedHighscores);
+  return res.json(highScores);
 });
 
+router.get("/totalresults", async (req, res) => {
+  const highScores = await prisma.programmer.findMany({
+    where: {},
+    orderBy: {
+      vote: "desc",
+    },
+  });
+
+  return res.json(highScores);
+});
 module.exports = router;

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700&family=Lexend+Deca&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<template>
+
+ 
+ 
+        <tr>
+            <td id="name" class="pr-td"></td>
+            <td id="knownfor" class="pr-td"></td>
+            <td id="vote" class="pr-td"></td>
+        </tr>
+    
+
+    </template>
+
+<body>
+    <div class="card">
+        <div class="header">
+            <h2>Results page</h2>
+            <h4><a href="./index.html">Homepage</a></h4>
+        </div>
+
+    <h3>Welcome to the results page! Your scores have been collected. 
+        This is the overview of the most famous programmers, listed 1 - 345.
+    </h3>
+    <table id="results-list">
+
+        <tr style="background-color: #C5E4E7;">
+            <th class="pr-td" >Name</th> 
+             <th class="pr-td">Known for</th>
+              <th class="pr-td">Score</th>
+          </tr>
+    </table>
+</body>
+</div>
+<script>
+   async function getResults() {
+      const response = await fetch("./questions/totalresults");
+      const data = await response.json();
+      console.log(data);
+
+      for (let index = 0; index <= data.length; index++) {
+    const programmer = data[index]
+    console.log(programmer)
+    const programmerName = programmer.name
+    const programmerKnownfor = programmer.knownFor
+    const programmerScore = programmer.vote
+    const template = document.querySelector("template");
+    const content = template.content.cloneNode(true);
+    content.querySelector("#name").innerText = programmerName
+    content.querySelector("#knownfor").innerText = programmerKnownfor;
+    content.querySelector('#vote').innerText = programmerScore;
+    document.querySelector("#results-list").append(content);
+      }
+    }
+
+    getResults()
+
+</script>
+</html>
