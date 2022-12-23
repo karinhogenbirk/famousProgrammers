@@ -33,10 +33,10 @@ body {
     flex-direction: row;
 } */
 
-/* tr {
+.tr-search {
     display: flex;
     flex-wrap: wrap;
-} */
+}
 
 .pr-td {
     border: 1px solid black;
@@ -317,9 +317,6 @@ progress {
         body {
             margin: 0px;
             /* display:block; */
-        }
-        tr {
-            flex-wrap: wrap;
         }
     }
 
