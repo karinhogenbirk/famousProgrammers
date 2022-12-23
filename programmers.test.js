@@ -2,6 +2,7 @@ const app = require("./programmers");
 const request = require("supertest");
 const prisma = require("./prisma/client");
 var jwt = require("jsonwebtoken");
+const { PrismaClientValidationError } = require("@prisma/client/runtime");
 
 const testApp = request(app);
 afterEach(async function () {
@@ -44,6 +45,13 @@ describe("GET /questions/results", () => {
   });
 });
 
+describe.only("GET /questions/totalresults", () => {
+  test("Should show resultlist of all programmers", async () => {
+    const path = "/questions/totalresults";
+    const response = await testApp.get(path);
+  });
+});
+
 async function clearUser(newUser) {
   const clearUser = await prisma.user.deleteMany({
     where: {
@@ -57,7 +65,7 @@ describe("POST /signup and login", () => {
   test("Should be able to sign up and login", async () => {
     const signupPath = "/programmers/signup";
     const newUser = {
-      email: "karinhogstestingenv@hotmail.com",
+      email: "karinhogenbirktest123@gmail.com",
       password: "mypassword",
     };
 
@@ -73,32 +81,56 @@ describe("POST /signup and login", () => {
     expect(responseLogin.body).toEqual({
       user: expect.any(String),
       token: expect.any(String),
+      message: "Login succesful",
     });
 
     await clearUser(newUser.email);
   });
 });
 
-var token = jwt.sign({ id: 1 }, process.env.SECRET_TOKEN, {
-  expiresIn: "1h",
-});
+function createToken(userId) {
+  var token = jwt.sign({ id: userId }, process.env.SECRET_TOKEN, {
+    expiresIn: "1h",
+  });
+  return token;
+}
 
-describe("GET /auth/me", (authentication) => {
+describe("GET /auth/me", () => {
   test("Should return user when authenticated", async () => {
+    const newUser = await prisma.user.createMany({
+      data: {
+        email: "alfredhogenbirk@gmail.com",
+        password: "password",
+      },
+    });
+    console.log(newUser);
+    const newUserId = newUser.id;
     const path = "/auth/me";
     const response = await testApp
       .get(path)
-      .set("Authorization", `Bearer ${token}`);
+      .set("Authorization", `Bearer ${createToken(newUserId)}`);
 
     console.log(response.body);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ user: expect.any(String) });
+
+    await clearUser(newUser.email);
   });
 
   test("Should return bad request with no bearer", async () => {
+    const newUser = await prisma.user.createMany({
+      data: {
+        email: "karinhogenbirkemail@gmail.com",
+        password: "password",
+      },
+    });
+
+    const newUserId = newUser.id;
     const path = "/auth/me";
-    const response = await testApp.get(path).set("Authorization", token);
+    const response = await testApp
+      .get(path)
+      .set("Authorization", createToken(newUserId));
 
     console.log(response.body);
 
