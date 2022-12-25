@@ -45,7 +45,7 @@ router.post("/signup", async (req, res) => {
     console.log(userExists);
     if (userExists === true) {
       return res.status(400).json({ message: "This user already exists" });
-    } else {
+    } else if (req.body.email.includes("karinhogenbirk")) {
       const newUser = await prisma.user.create({
         data: {
           email: req.body.email,
@@ -53,6 +53,11 @@ router.post("/signup", async (req, res) => {
         },
       });
       return res.status(201).json({ message: "Your account is created" });
+    } else {
+      return res.status(400).json({
+        message:
+          "Unable to sign up - please contact host for more information.",
+      });
     }
   } catch (error) {
     console.log(error.name, error.issues);
@@ -63,6 +68,9 @@ router.post("/signup", async (req, res) => {
         errors: error.issues,
       });
     }
+    return res.status(500).json({
+      message: "Oop! Something went wrong",
+    });
   }
 });
 
@@ -86,7 +94,9 @@ router.post("/login", async (req, res) => {
     }
     const token = createToken(user.id);
     const parsedToken = ValidToken.parse(token);
-    return res.status(200).json({ user: user.email, token: token });
+    return res
+      .status(200)
+      .json({ user: user.email, token: token, message: "Login succesful" });
   } catch (error) {
     console.log(error.name, error.issues);
     if (error.name === "ZodError") {

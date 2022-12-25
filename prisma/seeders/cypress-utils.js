@@ -4,7 +4,6 @@ const programmers = require("../../programmers.json");
 const prisma = require("../client");
 
 async function seeddb() {
-  console.log("Test Cypress");
   const programmer = await prisma.programmer.createMany({
     data: programmers,
   });

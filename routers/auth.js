@@ -89,12 +89,12 @@ async function authenticate(req, res, next) {
         .json({ message: "Bad request - invalid or empty token" });
     }
     var decoded = jwt.verify(token, process.env.SECRET_TOKEN);
-
     const user = await prisma.user.findUnique({
       where: {
         id: decoded.id,
       },
     });
+
     req.user = user;
     next();
   } catch (error) {
@@ -106,6 +106,7 @@ async function authenticate(req, res, next) {
 }
 
 router.get("/me", authenticate, async (req, res) => {
+  console.log(req.body);
   return res.status(200).json({ user: req.user.email });
 });
 

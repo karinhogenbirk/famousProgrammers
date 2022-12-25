@@ -4,6 +4,8 @@ const prisma = require("./prisma/client");
 var jwt = require("jsonwebtoken");
 const { PrismaClientValidationError } = require("@prisma/client/runtime");
 
+jest.setTimeout(10000);
+
 const testApp = request(app);
 afterEach(async function () {
   await prisma.$disconnect();
@@ -14,68 +16,71 @@ afterEach(async function () {
 describe("GET /programmers", () => {
   test("Should show list of programmers", async () => {
     const path = "/programmers";
-    const response = await testApp.get(path);
+    const response = await testApp.get(path).timeout(10000);
 
-    console.log(response.body);
+    // console.log(response.body);
   });
 });
 
 describe("GET /questions", () => {
   test("Should generate random question about programmer", async () => {
     const path = "/questions/programmers/random";
-    const response = await testApp.get(path);
+    const response = await testApp.get(path).timeout(10000);
 
-    console.log(response.body);
+    // console.log(response.body);
   });
 
   test("Should generate random question about project", async () => {
     const path = "/questions/projects/random";
-    const response = await testApp.get("/questions/projects/random");
+    const response = await testApp
+      .get("/questions/projects/random")
+      .timeout(10000);
 
-    console.log(response.body);
+    // console.log(response.body);
   });
 });
 
 describe("GET /questions/results", () => {
   test("Should show list of top 5 programmers", async () => {
     const path = "/questions/results";
-    const response = await testApp.get(path);
+    const response = await testApp.get(path).timeout(10000);
 
-    console.log(response.body);
+    // console.log(response.body);
   });
 });
 
-describe.only("GET /questions/totalresults", () => {
+describe("GET /questions/totalresults", () => {
   test("Should show resultlist of all programmers", async () => {
     const path = "/questions/totalresults";
-    const response = await testApp.get(path);
+    const response = await testApp.get(path).timeout(10000);
   });
 });
 
-async function clearUser(newUser) {
+async function clearUser() {
   const clearUser = await prisma.user.deleteMany({
-    where: {
-      email: newUser,
-    },
+    where: {},
   });
   await prisma.$disconnect();
 }
 
 describe("POST /signup and login", () => {
+  const signupPath = "/programmers/signup";
   test("Should be able to sign up and login", async () => {
-    const signupPath = "/programmers/signup";
     const newUser = {
       email: "karinhogenbirktest123@gmail.com",
       password: "mypassword",
     };
 
     const response = await testApp.post(signupPath).send(newUser);
-    console.log(response.body);
+    // console.log(response.body);
     expect(response.status).toBe(201);
     expect(response.body.message).toBe("Your account is created");
 
     const loginPath = "/programmers/login";
-    const responseLogin = await testApp.post(loginPath).send(newUser);
+    const responseLogin = await testApp
+      .post(loginPath)
+      .send(newUser)
+      .timeout(10000);
     console.log(responseLogin.body);
     expect(responseLogin.status).toBe(200);
     expect(responseLogin.body).toEqual({
@@ -84,7 +89,21 @@ describe("POST /signup and login", () => {
       message: "Login succesful",
     });
 
-    await clearUser(newUser.email);
+    await clearUser();
+  });
+
+  test("Should not be able to sign up if not Karin", async () => {
+    const newUser = {
+      email: "ditisgeenjuistpersoon@gmail.com",
+      password: "mypassword",
+    };
+
+    const response = await testApp.post(signupPath).send(newUser);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "Unable to sign up - please contact host for more information."
+    );
   });
 });
 
@@ -96,10 +115,13 @@ function createToken(userId) {
 }
 
 describe("GET /auth/me", () => {
+  afterEach(async () => {
+    await clearUser();
+  });
   test("Should return user when authenticated", async () => {
-    const newUser = await prisma.user.createMany({
+    const newUser = await prisma.user.create({
       data: {
-        email: "alfredhogenbirk@gmail.com",
+        email: "tjeee@gmail.com",
         password: "password",
       },
     });
@@ -108,7 +130,8 @@ describe("GET /auth/me", () => {
     const path = "/auth/me";
     const response = await testApp
       .get(path)
-      .set("Authorization", `Bearer ${createToken(newUserId)}`);
+      .set("Authorization", `Bearer ${createToken(newUserId)}`)
+      .timeout(10000);
 
     console.log(response.body);
 
@@ -119,9 +142,9 @@ describe("GET /auth/me", () => {
   });
 
   test("Should return bad request with no bearer", async () => {
-    const newUser = await prisma.user.createMany({
+    const newUser = await prisma.user.create({
       data: {
-        email: "karinhogenbirkemail@gmail.com",
+        email: "tjeee@gmail.com",
         password: "password",
       },
     });
@@ -130,7 +153,8 @@ describe("GET /auth/me", () => {
     const path = "/auth/me";
     const response = await testApp
       .get(path)
-      .set("Authorization", createToken(newUserId));
+      .set("Authorization", createToken(newUserId))
+      .timeout(10000);
 
     console.log(response.body);
 
@@ -138,11 +162,16 @@ describe("GET /auth/me", () => {
     expect(response.body.message).toBe(
       "Bad request - header must include Bearer"
     );
+
+    await clearUser(newUser.email);
   });
 
   test("Should return bad request without token", async () => {
     const path = "/auth/me";
-    const response = await testApp.get(path).set("Authorization", "Bearer ");
+    const response = await testApp
+      .get(path)
+      .set("Authorization", "Bearer ")
+      .timeout(10000);
     console.log(response.body);
 
     expect(response.status).toBe(400);
@@ -160,8 +189,18 @@ async function clearProgrammer(newProgrammer) {
 }
 
 describe("POST /auth/create", () => {
+  afterEach(async () => {
+    await clearUser();
+  });
   const path = "/auth/create";
   test("Should be able to create new programmer", async () => {
+    const newUser = await prisma.user.create({
+      data: {
+        email: "tjeee@gmail.com",
+        password: "password",
+      },
+    });
+    const newUserId = newUser.id;
     const newProgrammer = {
       name: "Alfred Hogenbirk",
       project: "Test case",
@@ -170,7 +209,8 @@ describe("POST /auth/create", () => {
     const response = await testApp
       .post(path)
       .send(newProgrammer)
-      .set("Authorization", `Bearer ${token}`);
+      .set("Authorization", `Bearer ${createToken(newUserId)}`)
+      .timeout(10000);
     console.log(response.body);
 
     expect(response.status).toBe(201);
@@ -182,6 +222,13 @@ describe("POST /auth/create", () => {
   });
 
   test("Should return bad request if programmer already exists", async () => {
+    const newUser = await prisma.user.create({
+      data: {
+        email: "tjeee@gmail.com",
+        password: "password",
+      },
+    });
+    const newUserId = newUser.id;
     const newProgrammer = {
       name: "Evan Williams",
       project: "Testing project",
@@ -190,7 +237,8 @@ describe("POST /auth/create", () => {
     const response = await testApp
       .post(path)
       .send(newProgrammer)
-      .set("Authorization", `Bearer ${token}`);
+      .set("Authorization", `Bearer ${createToken(newUserId)}`)
+      .timeout(10000);
     console.log(response.body);
 
     expect(response.status).toBe(400);
@@ -200,6 +248,13 @@ describe("POST /auth/create", () => {
   });
 
   test("Returns ZodError if not enough characters", async () => {
+    const newUser = await prisma.user.create({
+      data: {
+        email: "tjeee@gmail.com",
+        password: "password",
+      },
+    });
+    const newUserId = newUser.id;
     const newProgrammer = {
       firstname: " ",
       surname: "i",
@@ -209,7 +264,8 @@ describe("POST /auth/create", () => {
     const response = await testApp
       .post(path)
       .send(newProgrammer)
-      .set("Authorization", `Bearer ${token}`);
+      .set("Authorization", `Bearer ${createToken(newUserId)}`)
+      .timeout(10000);
     console.log(response.body);
     expect(response.status).toBe(400);
     expect(response.body.message).toBe(
@@ -218,6 +274,13 @@ describe("POST /auth/create", () => {
   });
 
   test("Should escape html", async () => {
+    const newUser = await prisma.user.create({
+      data: {
+        email: "tjeee@gmail.com",
+        password: "password",
+      },
+    });
+    const newUserId = newUser.id;
     const newProgrammer = {
       name: "<h1>Karin</h1>",
       project: "<button>Click me</button>",
@@ -226,7 +289,8 @@ describe("POST /auth/create", () => {
     const response = await testApp
       .post(path)
       .send(newProgrammer)
-      .set("Authorization", `Bearer ${token}`);
+      .set("Authorization", `Bearer ${createToken(newUserId)}`)
+      .timeout(10000);
     console.log(response.body);
 
     expect(response.body.programmer).toBe("&lt;h1&gt;Karin&lt;/h1&gt;");
@@ -236,14 +300,25 @@ describe("POST /auth/create", () => {
 });
 
 describe("POST /auth/find", () => {
+  afterEach(async () => {
+    await clearUser();
+  });
   const path = "/auth/find";
   test("Should be able to find a new programmer with full name", async () => {
+    const newUser = await prisma.user.create({
+      data: {
+        email: "tjeee@gmail.com",
+        password: "password",
+      },
+    });
+    const newUserId = newUser.id;
     const findProgrammer = { firstname: "karin", surname: "hogenbirk" };
 
     const response = await testApp
       .post(path)
       .send(findProgrammer)
-      .set("Authorization", `Bearer ${token}`);
+      .set("Authorization", `Bearer ${createToken(newUserId)}`)
+      .timeout(10000);
     console.log(response.body);
 
     expect(response.status).toBe(200);
@@ -251,12 +326,20 @@ describe("POST /auth/find", () => {
   });
 
   test("Should be able to find a new programmer with only firstname", async () => {
+    const newUser = await prisma.user.create({
+      data: {
+        email: "tjeee@gmail.com",
+        password: "password",
+      },
+    });
+    const newUserId = newUser.id;
     const findProgrammer = { firstname: "karin" };
 
     const response = await testApp
       .post(path)
       .send(findProgrammer)
-      .set("Authorization", `Bearer ${token}`);
+      .set("Authorization", `Bearer ${createToken(newUserId)}`)
+      .timeout(10000);
     console.log(response.body);
 
     expect(response.status).toBe(200);
@@ -264,12 +347,20 @@ describe("POST /auth/find", () => {
   });
 
   test("Should be able to find a new programmer with only lastname", async () => {
+    const newUser = await prisma.user.create({
+      data: {
+        email: "tjeee@gmail.com",
+        password: "password",
+      },
+    });
+    const newUserId = newUser.id;
     const findProgrammer = { surname: "hogenbirk" };
 
     const response = await testApp
       .post(path)
       .send(findProgrammer)
-      .set("Authorization", `Bearer ${token}`);
+      .set("Authorization", `Bearer ${createToken(newUserId)}`)
+      .timeout(10000);
     console.log(response.body);
 
     expect(response.status).toBe(200);
@@ -277,12 +368,20 @@ describe("POST /auth/find", () => {
   });
 
   test("Should return not found if programmer not in database", async () => {
+    const newUser = await prisma.user.create({
+      data: {
+        email: "tjeee@gmail.com",
+        password: "password",
+      },
+    });
+    const newUserId = newUser.id;
     const findProgrammer = { surname: "jantje" };
 
     const response = await testApp
       .post(path)
       .send(findProgrammer)
-      .set("Authorization", `Bearer ${token}`);
+      .set("Authorization", `Bearer ${createToken(newUserId)}`)
+      .timeout(10000);
     console.log(response.body);
 
     expect(response.status).toBe(404);
@@ -302,8 +401,18 @@ async function resetProgrammer(programmerName) {
 }
 
 describe("PATCH /auth/update", () => {
+  afterEach(async () => {
+    await clearUser();
+  });
   const path = "/auth/update";
   test("Should be able to update programmer", async () => {
+    const newUser = await prisma.user.create({
+      data: {
+        email: "tjeee@gmail.com",
+        password: "password",
+      },
+    });
+    const newUserId = newUser.id;
     const updateProgrammer = {
       firstname: "Karin",
       surname: "Hogenbirk",
@@ -312,7 +421,8 @@ describe("PATCH /auth/update", () => {
     const response = await testApp
       .patch(path)
       .send(updateProgrammer)
-      .set("Authorization", `Bearer ${token}`);
+      .set("Authorization", `Bearer ${createToken(newUserId)}`)
+      .timeout(10000);
     console.log(response.body);
 
     expect(response.status).toBe(201);
@@ -323,6 +433,13 @@ describe("PATCH /auth/update", () => {
   });
 
   test("Can't update programmer if project already exists", async () => {
+    const newUser = await prisma.user.create({
+      data: {
+        email: "tjeee@gmail.com",
+        password: "password",
+      },
+    });
+    const newUserId = newUser.id;
     const updateProgrammer = {
       firstname: "John",
       surname: "Scholes",
@@ -332,7 +449,8 @@ describe("PATCH /auth/update", () => {
     const response = await testApp
       .patch(path)
       .send(updateProgrammer)
-      .set("Authorization", `Bearer ${token}`);
+      .set("Authorization", `Bearer ${createToken(newUserId)}`)
+      .timeout(10000);
     console.log(response.body);
 
     expect(response.status).toBe(400);
@@ -353,8 +471,18 @@ async function addProgrammer(firstname, surname) {
 }
 
 describe("DELETE /auth/delete", () => {
+  afterEach(async () => {
+    await clearUser();
+  });
   const path = "/auth/delete";
   test("Should be able to delete programmer from database", async () => {
+    const newUser = await prisma.user.create({
+      data: {
+        email: "tjeee@gmail.com",
+        password: "password",
+      },
+    });
+    const newUserId = newUser.id;
     const deleteProgrammer = {
       firstname: "Michael",
       surname: "Lesk",
@@ -362,7 +490,8 @@ describe("DELETE /auth/delete", () => {
     const response = await testApp
       .delete(path)
       .send(deleteProgrammer)
-      .set("Authorization", `Bearer ${token}`);
+      .set("Authorization", `Bearer ${createToken(newUserId)}`)
+      .timeout(10000);
     console.log(response.body);
 
     expect(response.status).toBe(201);
@@ -371,6 +500,13 @@ describe("DELETE /auth/delete", () => {
   });
 
   test("Can't delete if programmer doesn't exist", async () => {
+    const newUser = await prisma.user.create({
+      data: {
+        email: "tjeee@gmail.com",
+        password: "password",
+      },
+    });
+    const newUserId = newUser.id;
     const deleteProgrammer = {
       firstname: "Hola",
       surname: "Hola",
@@ -378,7 +514,8 @@ describe("DELETE /auth/delete", () => {
     const response = await testApp
       .delete(path)
       .send(deleteProgrammer)
-      .set("Authorization", `Bearer ${token}`);
+      .set("Authorization", `Bearer ${createToken(newUserId)}`)
+      .timeout(10000);
     console.log(response.body);
 
     expect(response.status).toBe(404);
